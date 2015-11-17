@@ -11,7 +11,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.google.common.base.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.edu.fatima.entities.acesso.Acesso;
 import br.edu.fatima.entities.repositories.Repository;
@@ -21,6 +22,9 @@ import br.edu.fatima.entities.sector.Setor_;
 
 @Stateless
 public class ReposSetor extends Repository<Setor> {
+	
+	Logger logger = LoggerFactory.getLogger(ReposSetor.class);
+	private static final Integer TAMANHODALISTAGEMPAGINACAO = 10;
 	@Inject ReposUsuario usuarioNobanco;
 	
 	public List<Setor> retornaTodoSetorNaoCadastrado(){
@@ -80,7 +84,8 @@ public class ReposSetor extends Repository<Setor> {
 		}		
 	}
 	
-	public List<Setor> paginator (Integer pageNumber, Integer pageSize){
+	public List<Setor> paginator (Integer pageNumber){
+		Integer pageSize =TAMANHODALISTAGEMPAGINACAO;
 		CriteriaBuilder cb = em.getCriteriaBuilder();		
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);		
 		countQuery.select(cb.count(countQuery.from(Setor.class)));		

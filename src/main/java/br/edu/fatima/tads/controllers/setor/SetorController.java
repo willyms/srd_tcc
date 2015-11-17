@@ -71,7 +71,7 @@ public class SetorController {
 	public void lista(Integer page, String filter) {
 		if(filter == null || filter == ""){
 			result.include("totalpagina", setorNobanco.totalnumber().intValue() -12 <= 0 ? 1 : setorNobanco.totalnumber().intValue() -12);
-			result.include("lista_setores", setorNobanco.paginator(page, 10))
+			result.include("lista_setores", setorNobanco.paginator(page))
 			.include("mensagem_resultado", "Lista de Setores esta vazio");
 		}
 		if(filter != null){

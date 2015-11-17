@@ -10,6 +10,7 @@ import javax.inject.Named;
 
 import br.edu.fatima.entities.repositories.func.ReposFuncionario;
 import br.edu.fatima.entities.repositories.historico.ReposHistorico;
+import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
 
 @Named("formatter")
 @ApplicationScoped
@@ -17,6 +18,7 @@ public class Formatter {
 	private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 	@Inject private ReposHistorico historicoNobanco;
 	@Inject private ReposFuncionario funcionarioNoBanco;
+	@Inject private ReposUsuario usuarioNobanco;
 	
 	
 	public String localDateTime(LocalDateTime value) {
@@ -33,6 +35,6 @@ public class Formatter {
 	}
 	
 	public boolean Eadministrator(Long id){
-		return funcionarioNoBanco.Eadministrator(id);
+		return (usuarioNobanco.verificarFuncionario(funcionarioNoBanco.comId(id)) != null);
 	}
 }

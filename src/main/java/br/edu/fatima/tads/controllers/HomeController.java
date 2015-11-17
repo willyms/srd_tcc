@@ -51,8 +51,7 @@ public class HomeController {
 	
 	@Get("/dashboard/historico/{page}/{nome}/{dataentrada}")
 	@Admin
-	public void historico(int page, String nome, String dataentrada) {
-		
+	public void historico(int page, String nome, String dataentrada) {		
 		LocalDate strDate =  (SrdUtils.isNullOrBlank(dataentrada) ? LocalDate.now() :  LocalDate.parse(dataentrada));
 		String nome_ = (nome.equalsIgnoreCase("todos") ? "" : nome);
 		result.include("data", strDate);

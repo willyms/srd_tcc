@@ -10,8 +10,7 @@ public class CriptografiaUtil {
 		
 	public static String criptografarString(String source){
 		if(source == null || source.isEmpty())
-				return null;
-		
+				return null;		
 		String md5 = null;
 		try {
 			MessageDigest mdEnc = MessageDigest.getInstance("MD5");

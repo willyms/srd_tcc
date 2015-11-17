@@ -26,6 +26,7 @@ public class ReposFuncionario extends Repository<Funcionario> {
 	Logger logger = LoggerFactory.getLogger(ReposFuncionario.class);
 	
 	@Inject ReposUsuario usuarioNoBanco;
+	private static final Integer TAMANHODALISTAGEMPAGINACAO = 10;
 	
 	public void desativarComId(Long id) {
 		desativarOuAtivar(id, false);
@@ -36,7 +37,8 @@ public class ReposFuncionario extends Repository<Funcionario> {
 	}
 
 
-	public List<Funcionario> paginator2(Integer pageNumber, Integer pageSize) {
+	public List<Funcionario> paginator(Integer pageNumber) {
+		Integer pageSize = TAMANHODALISTAGEMPAGINACAO;
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 
 		CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
@@ -67,8 +69,7 @@ public class ReposFuncionario extends Repository<Funcionario> {
 	public Long totalnumber() {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-		countQuery.select(criteriaBuilder.count(countQuery.from(Funcionario.class)));
-		
+		countQuery.select(criteriaBuilder.count(countQuery.from(Funcionario.class)));		
 		return em.createQuery(countQuery).getSingleResult() != null ? em.createQuery(countQuery).getSingleResult() : 1L;
 	}
 
@@ -101,8 +102,5 @@ public class ReposFuncionario extends Repository<Funcionario> {
 			return lista;
 		}
 	}
-
-	public boolean Eadministrator(Long id) {		
-		return usuarioNoBanco.verificarFuncionario(this.comId(id)) == null;
-	}
+	
 }

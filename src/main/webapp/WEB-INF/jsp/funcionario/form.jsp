@@ -174,7 +174,7 @@
   						<span class="error">${errors.from('errors.imagem').join(' - ')}</span>
   						<span class="error">${errors.from('arquivo.conteudo').join(' - ')}</span>
   						<span class="error">${errors.from('arquivo.contentType').join(' - ')}</span>  					
-  						 <div>param.file: {{param.file}}</div>       				
+  						<!--  <div>param.file: {{param.file}}</div>  -->      				
   				</fieldset>
 			
   				<fieldset class="form-group">
@@ -195,13 +195,20 @@
   						<h4 class="card-title"><fmt:message key="srd.label.setor"/></h4>
   						<div class="form-group col-sm-8">    
     						<input maxlength="30" pattern="[a-zA-Z0-9]+" type="text" ng-model="setor.nome" class="form-control"  />    					
-  							<p><fmt:message key="srd.label.setor.add"/></p>
   						</div>
   						<button type="button" ng-click="adicionaSetor()" class="btn btn-primary col-sm-offset-0 col-xs-offset-3"><fmt:message key="srd.botao.adicionarSetor"/></button>
-  					</div>
-  					  		<br />		  					
+  					</div>  					  		  					
   					<div class="row">
-  					<div class="callout-light  fade-in-b">  					
+  						<h5>Lista de Setores</h5>
+  						<div class="well well-sm text-center">
+							<div ng-repeat="setor in lista_setores" class="btn-group" data-toggle="buttons">			
+								<label class="btn btn-default {{setor.check ? 'active' :'' }} ">								
+									<input type="checkbox" autocomplete="off" name="funcionario.acesso[{{ lista_setores.indexOf(setor) }}].setor.nome" value="{{ setor.nome }}" ng-checked="{{setor.check}}">
+									<span class="glyphicon glyphicon-ok"></span> {{ setor.nome }}
+								</label>
+							</div>
+						</div>	
+  					<!-- <div class="callout-light  fade-in-b">  					
   						<div ng-repeat="setor in lista_setores" class="col-sm-3">
   						<label class="c-input c-checkbox">
   							 <input type="checkbox" name="funcionario.acesso[{{ lista_setores.indexOf(setor) }}].setor.nome" value="{{ setor.nome }}" ng-checked="{{setor.check}}" >
@@ -210,7 +217,7 @@
   						
 						</label>		
 						</div>
-					</div>						
+					</div>		 -->				
 					</div>
 				</div>
 				<br />

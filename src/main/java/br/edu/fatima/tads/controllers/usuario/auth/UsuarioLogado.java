@@ -4,12 +4,11 @@ import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.hibernate.loader.custom.Return;
-
-import br.edu.fatima.entities.sector.Setor_;
 import br.edu.fatima.entities.usuario.Usuario;
 
+@Named("userInfo")
 @SessionScoped
 public class UsuarioLogado implements Serializable {
 	
@@ -40,7 +39,7 @@ public class UsuarioLogado implements Serializable {
 		return this.usuario.getSetor().getId();
 	}
 	
-	public boolean isAdmin (){	
+	public Boolean isAdmin (){	
 		//usuario.getPerfil().name().equalsIgnoreCase("ADMIN")		
 		return usuario != null ? usuario.getPerfil().name().equalsIgnoreCase("ADMIN") : false ;
 	}

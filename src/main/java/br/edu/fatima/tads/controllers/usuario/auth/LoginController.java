@@ -46,8 +46,9 @@ public class LoginController {
 	
 	@Get
 	@Path(value = {"","/"})
-	public void form() {
-		
+	public void form() {		
+		if(usuarioNoBanco.findbyName("ROOT"))
+			result.include("sucesso", "usuario Root criado com sucesso");
 	}
 	
 	@Post
@@ -56,8 +57,7 @@ public class LoginController {
 		Usuario usuario = usuarioNoBanco.comLoginESenha(v_login, v_senha);
 		
 		validator.ensure(usuario != null, new I18nMessage("usuario", "login.ousenha.invalidos"))		
-		.onErrorRedirectTo(this).form();
-		
+		.onErrorRedirectTo(this).form();		
 		logado.loga(usuario);
 		
 		if(logado.isAdmin())

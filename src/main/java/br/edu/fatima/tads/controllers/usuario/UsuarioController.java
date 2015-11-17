@@ -19,6 +19,7 @@ import br.edu.fatima.entities.repositories.setor.ReposSetor;
 import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
 import br.edu.fatima.entities.usuario.Perfil;
 import br.edu.fatima.entities.usuario.Usuario;
+import br.edu.fatima.entities.utils.CriptografiaUtil;
 import br.edu.fatima.entities.utils.SrdUtils;
 
 @Controller
@@ -84,7 +85,7 @@ public class UsuarioController {
 	public void lista(Integer page, String filter) {
 		if(SrdUtils.isEmpty(filter)){
 			result.include("totalpagina", usuarioNoBanco.totalnumber().intValue() -12 <= 0 ? 1 : usuarioNoBanco.totalnumber().intValue() -12);
-			result.include("lista_usuario", usuarioNoBanco.paginator(page, 10));
+			result.include("lista_usuario", usuarioNoBanco.paginator(page));
 		}
 		if(!SrdUtils.isNullOrBlank(filter)){
 			result.include("totalpagina", 1)
@@ -112,6 +113,9 @@ public class UsuarioController {
 	
 		validator.onErrorForwardTo(this).form(usuario, new Funcionario());
 		if(id == null){
+		/*	usuario.setPassword(CriptografiaUtil.criptografarString(usuario.getPassword()));
+			usuario.setPassVerify(CriptografiaUtil.criptografarString(usuario.getPassVerify()));*/
+			
 			usuarioNoBanco.novo(usuario);
 		}else{
 			usuario.setId(id);
@@ -119,8 +123,5 @@ public class UsuarioController {
 		}		
 		result.redirectTo(this).lista(1, null);
 	}
-	
-	
-	
 	
 }

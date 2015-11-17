@@ -40,7 +40,7 @@ import com.google.common.io.ByteStreams;
 public class FuncionarioController {
 	Logger logger = LoggerFactory.getLogger(FuncionarioController.class);
 
-	private ReposSetor setorNoBanco;
+	private  ReposSetor setorNoBanco;
 	private ReposAcesso acessoNobanco;
 	private ReposArquivo arquivoNobanco;
 	private ReposFuncionario funcNobanco;
@@ -71,14 +71,14 @@ public class FuncionarioController {
 	public void lista(Integer pageNumber, String filter) {
 		result.include("totalpagina", funcNobanco.totalnumber().intValue() - 12 <= 0 ? 1 : funcNobanco.totalnumber().intValue() - 12 )
 		.include("s", setorNoBanco.todos())
-		.include("lista_funcionario", funcNobanco.paginator2(pageNumber, 10))
+		.include("lista_funcionario", funcNobanco.paginator(pageNumber))
 		.include("mensagem_resultado", "Lista de Funcionario esta vazio");
 	}
 
 	@Get
 	@Path(value = "/todos/{pageNumber}")
 	public void todos(Integer pageNumber) {
-		result.use(Results.json()).withoutRoot().from(funcNobanco.paginator2(pageNumber, 10)).serialize();
+		result.use(Results.json()).withoutRoot().from(funcNobanco.paginator(pageNumber)).serialize();
 
 	}
 

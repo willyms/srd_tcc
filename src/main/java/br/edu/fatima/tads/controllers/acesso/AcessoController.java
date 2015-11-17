@@ -29,6 +29,7 @@ import br.edu.fatima.tads.controllers.usuario.auth.UsuarioLogado;
 public class AcessoController {
 
 	Logger logger = LoggerFactory.getLogger(AcessoController.class);
+	
 	private static final Boolean B_ACESSO_AUTORIZADO = true;
 	private static final Boolean B_ACESSO_NAO_AUTORIZADO = false;
 	

@@ -1,9 +1,5 @@
 package br.edu.fatima.entities.repositories.usuario;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +15,16 @@ import org.slf4j.LoggerFactory;
 
 import br.edu.fatima.entities.funcionario.Funcionario;
 import br.edu.fatima.entities.repositories.Repository;
+import br.edu.fatima.entities.usuario.Perfil;
 import br.edu.fatima.entities.usuario.Usuario;
 import br.edu.fatima.entities.usuario.Usuario_;
+import br.edu.fatima.entities.utils.CriptografiaUtil;
 
 @Stateless
 public class ReposUsuario extends Repository<Usuario> {
 	
 	Logger logger = LoggerFactory.getLogger(ReposUsuario.class);
+	private static final Integer TAMANHODALISTAGEMPAGINACAO = 10;
 	
 	public List<String> listaTodoUsuarioCadastrado(){
 		List<String> nomeSetores = new ArrayList<>();
@@ -43,7 +42,8 @@ public class ReposUsuario extends Repository<Usuario> {
 		}
 	}
 
-	public List<Usuario> paginator(Integer pageNumber, Integer pageSize) {
+	public List<Usuario> paginator(Integer pageNumber) {
+		Integer pageSize = TAMANHODALISTAGEMPAGINACAO;
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(Usuario.class)));
@@ -69,7 +69,6 @@ public class ReposUsuario extends Repository<Usuario> {
 	}
 
 	public List<Usuario> filter(String nome) {
-
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
@@ -100,45 +99,7 @@ public class ReposUsuario extends Repository<Usuario> {
 		}
 		
 	}
-
-	public void criptografandoPassword() {
-		try {
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-			System.out.println("random = "+random);
-			
-			byte[] byteSalt = new byte[8];			
-			System.out.println("byteSalt ="+byteSalt);
-			
-			random.nextBytes(byteSalt);
-			
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-			messageDigest.reset();
-			messageDigest.update(byteSalt);
-			byte byteHash[] = messageDigest.digest("passwd".getBytes("UTF-8"));
-
-			StringBuilder hexHash = new StringBuilder();
-			for (byte b : byteHash) {
-				hexHash.append(String.format("%02X", 0xFF & b));
-			}
-			System.out.println("hexHash ="+hexHash.toString());
-			
-			StringBuilder hexSalt = new StringBuilder();
-			for (byte b : byteSalt) {
-				hexSalt.append(String.format("%02X", 0xFF & b));
-			}
-			System.out.println("hexSalt ="+hexSalt.toString());
-			
-			String hash = hexHash.toString();
-			String salt = hexSalt.toString();
-			
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-	}
-	
+		
 	public Usuario verificarFuncionario(Funcionario funcionario){	
 		logger.debug("verificar se o funcionario é administrador do sistema!");
 		
@@ -155,5 +116,28 @@ public class ReposUsuario extends Repository<Usuario> {
 		} catch (NoResultException e) {
 			return null;
 		}		
+	}
+
+	public Boolean findbyName(String username) {
+		logger.info("verifica usuario root ");
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
+		Root<Usuario> form =  cq.from(Usuario.class);
+		
+		cq.where(cb.equal(form.get(Usuario_.username), username));
+		try {
+			Usuario user = em.createQuery(cq).getSingleResult();
+			return user != null;
+		} catch (NoResultException e) {
+			logger.info("adiciona usuario root ");
+			Usuario usuario = new Usuario();
+			usuario.setAtivo(true);
+			usuario.setPerfil(Perfil.ADMIN);
+			usuario.setUsername(username);
+			usuario.setPassword(CriptografiaUtil.criptografarString("nuncavaodescobrir"));
+			usuario.setPassVerify(CriptografiaUtil.criptografarString("nuncavaodescobrir"));
+			novo(usuario);
+			return true;
+		}
 	}
 }

@@ -37,7 +37,7 @@ public abstract class Repository<T> {
 	}
 
 	public T atualizar(T entidade) {
-		return em.merge(entidade);		
+		return em.merge(entidade);	
 	}
 
 	

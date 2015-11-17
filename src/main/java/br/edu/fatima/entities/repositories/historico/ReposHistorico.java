@@ -11,6 +11,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.edu.fatima.entities.acesso.Acesso;
 import br.edu.fatima.entities.historico.Historico;
 import br.edu.fatima.entities.historico.Historico_;
@@ -21,14 +24,17 @@ import br.edu.fatima.entities.utils.SrdUtils;
 
 public class ReposHistorico extends Repository<Historico> {
 	
+	Logger logger = LoggerFactory.getLogger(ReposHistorico.class);
+	private static final Integer TAMANHODALISTAGEMPAGINACAO = 50;
+	
 	@Inject private ReposFuncionario funcNoBanco;
 	@Inject private ReposSetor setorNobanco;
-			private static final Integer TOTALRESULTADO = 50;
 			
-	public Boolean verificaqrcode(Long params, Long setor) {
+			
+	public Boolean verificaqrcode(Long funcionario, Long setor) {
 		try {
 			TypedQuery<Acesso> query = em.createQuery("select a from Acesso a where a.func.id=? and a.setor.id=?", Acesso.class)
-											.setParameter(1, params)
+											.setParameter(1, funcionario)
 											.setParameter(2, setor)
 											.setHint("javax.persistence.cache.storeMode", "REFRESH");
 			Acesso acesso = query.getSingleResult();
@@ -98,8 +104,8 @@ public class ReposHistorico extends Repository<Historico> {
 					
 		TypedQuery<Historico> typeQuery = em.createQuery(select);
 		if (pageNumber <= count.longValue()) {
-			typeQuery.setFirstResult((pageNumber - 1) * TOTALRESULTADO);
-			typeQuery.setMaxResults(TOTALRESULTADO);
+			typeQuery.setFirstResult((pageNumber - 1) * TAMANHODALISTAGEMPAGINACAO);
+			typeQuery.setMaxResults(TAMANHODALISTAGEMPAGINACAO);
 			return typeQuery.getResultList();
 		}
 		return new ArrayList<Historico>();
@@ -136,7 +142,7 @@ public class ReposHistorico extends Repository<Historico> {
 										root.get(Historico_.funcionario).in(funcNoBanco.buscaPorNome(nome))));
 			}			
 			count = em.createQuery(countQuery).getSingleResult();
-			return ((count - TOTALRESULTADO) > 0 ? (count -TOTALRESULTADO) : 1L);
+			return ((count - TAMANHODALISTAGEMPAGINACAO) > 0 ? (count -TAMANHODALISTAGEMPAGINACAO) : 1L);
 		} catch (NoResultException e) {
 			return count;
 		}		

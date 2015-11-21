@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.omg.PortableInterceptor.RequestInfo;
+
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Options;
 import br.com.caelum.vraptor.Path;
@@ -19,6 +21,7 @@ import br.com.caelum.vraptor.view.Results;
 public class CORSController {
     private Result result;
     private Router router;
+   
  
     /**
      * @deprecated
@@ -29,6 +32,7 @@ public class CORSController {
     public CORSController(Result result, Router router) {
         this.result = result;
         this.router = router;
+       
     }
  
     @Options
@@ -40,7 +44,7 @@ public class CORSController {
          
         result.use(Results.status()).header("Allow", allowMethods);
         result.use(Results.status()).header("Access-Control-Allow-Methods", allowMethods);
-        result.use(Results.status()).header("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, accept, Authorization, origin");
+        result.use(Results.status()).header("Access-Control-Allow-Headers", "Content-Type, accept, Authorization, X-Tenant, X-Filial, origin");
     }
 }
 

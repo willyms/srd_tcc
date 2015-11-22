@@ -28,7 +28,6 @@ import br.edu.fatima.entities.utils.interfac.UniqueKey;
 //@UniqueKey.List(value = { @UniqueKey(property = "username"), @UniqueKey(property = "perfil") }) // more than one unique keys
 @UniqueKey(property = "username")
 public class Usuario extends DefaultEntity {
-
 	/**
 	 * 
 	 */

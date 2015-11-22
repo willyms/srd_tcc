@@ -11,7 +11,7 @@ import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2015-11-01T19:57:17.217-0200")
+@Generated(value="Dali", date="2015-11-21T09:53:11.796-0200")
 @StaticMetamodel(Funcionario.class)
 public class Funcionario_ extends DefaultEntity_ {
 	public static volatile SingularAttribute<Funcionario, String> cpf;

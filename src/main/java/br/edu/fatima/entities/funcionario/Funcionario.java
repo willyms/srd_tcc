@@ -26,28 +26,30 @@ import br.edu.fatima.entities.DefaultEntity;
 import br.edu.fatima.entities.acesso.Acesso;
 import br.edu.fatima.entities.arquivo.Arquivo;
 import br.edu.fatima.entities.historico.Historico;
+import br.edu.fatima.entities.utils.interfac.UniqueKey;
 
 @Entity
 @Table(name = "tb_employers", 
 		uniqueConstraints={ 	
 							@UniqueConstraint(columnNames={"cl_cpf"})
 							})
+@UniqueKey.List(value = { @UniqueKey(property = "cpf", message="{validator.funcionario.cpf.unico}"), @UniqueKey(property = "nome", message="{validator.funcionario.nome.unico}") })
 public class Funcionario extends DefaultEntity {
 
 	/**
-	 * 
+	 * validator.funcionario.cpf.unico
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Getter
 	@Setter
-	@Column(name = "cl_cpf", unique=true)
-	@Size(min=11, max=14, message="{validator.funcionario.cpf.tamanha}")
+	@Column(name = "cl_cpf", unique=true, updatable=false)
+	@Size(min=11, max=14, message="{validator.funcionario.cpf.tamanho}")
 	private String cpf;
 
 	@Getter
 	@Setter	
-	@Column(name = "cl_name")
+	@Column(name = "cl_name", unique=true, updatable=false)
 	@NotNull(message ="{validator.funcionario.nome.vazio}")
 	@Size(min=10, message="{validator.funcionario.nome.tamanho}")
 	private String nome;

@@ -169,11 +169,9 @@
 			</c:if>
 			
   				<fieldset class="form-group">    				
-    				     <label for="formGroupExampleInput"><fmt:message key="srd.label.foto"/></label>
-    				    	 <input id="fileImage" type="file" name="imagem" class="form-control " accept="image/*"  ng-required="{{ required }}"  data-file="param.file"  /> 
-  						<span class="error">${errors.from('errors.imagem').join(' - ')}</span>
-  						<span class="error">${errors.from('arquivo.conteudo').join(' - ')}</span>
-  						<span class="error">${errors.from('arquivo.contentType').join(' - ')}</span>  					
+    				    <label for="formGroupExampleInput"><fmt:message key="srd.label.foto"/></label>
+    				    <input id="fileImage" type="file" name="Filedata" class="form-control " accept="image/*"  ng-required="{{ required }}"  data-file="param.file"  />   						
+  						<span class="error">${errors.from('arquivo.contentType').join(' - ')}</span>
   						<!--  <div>param.file: {{param.file}}</div>  -->      				
   				</fieldset>
 			
@@ -195,6 +193,7 @@
   						<h4 class="card-title"><fmt:message key="srd.label.setor"/></h4>
   						<div class="form-group col-sm-8">    
     						<input maxlength="30" pattern="[a-zA-Z0-9]+" type="text" ng-model="setor.nome" class="form-control"  />    					
+  							<span class="error">${errors.from('funcionario.acesso.setor.nome').join(' - ')}</span>  
   						</div>
   						<button type="button" ng-click="adicionaSetor()" class="btn btn-primary col-sm-offset-0 col-xs-offset-3"><fmt:message key="srd.botao.adicionarSetor"/></button>
   					</div>  					  		  					

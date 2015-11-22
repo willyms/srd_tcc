@@ -1,7 +1,9 @@
 package br.edu.fatima.tads.controllers.usuario.auth;
 
 import javax.inject.Inject;
-import javax.validation.constraints.Size;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
@@ -10,12 +12,13 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.observer.download.ByteArrayDownload;
 import br.com.caelum.vraptor.observer.download.Download;
-import br.com.caelum.vraptor.validator.I18nMessage;
+import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.edu.fatima.entities.arquivo.Arquivo;
 import br.edu.fatima.entities.repositories.arquivo.ReposArquivo;
 import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
 import br.edu.fatima.entities.usuario.Usuario;
+import br.edu.fatima.entities.utils.interfac.LoginAvailable;
 import br.edu.fatima.tads.controllers.HomeController;
 import br.edu.fatima.tads.controllers.acesso.AcessoController;
 
@@ -23,6 +26,7 @@ import br.edu.fatima.tads.controllers.acesso.AcessoController;
 @Path(value = {"/login"})
 public class LoginController {
 	
+	Logger logger = LoggerFactory.getLogger(LoginController.class);
 	private UsuarioLogado logado;
 	private Result result;
 	private Validator validator;
@@ -53,11 +57,18 @@ public class LoginController {
 	
 	@Post
 	@Path(value ={"/"})
-	public void login(String v_login, @Size(min=6, max=50, message="{validator.usuario.password.tamanho}") String v_senha){
-		Usuario usuario = usuarioNoBanco.comLoginESenha(v_login, v_senha);
+	public void login(@LoginAvailable Usuario usuario){
 		
-		validator.ensure(usuario != null, new I18nMessage("usuario", "login.ousenha.invalidos"))		
-		.onErrorRedirectTo(this).form();		
+		logger.debug("login");
+		
+		validator.onErrorRedirectTo(this).form();
+		
+		usuario = usuarioNoBanco.findbyUsername(usuario.getUsername());
+	
+		if(!usuario.isAtivo()){
+			validator.add(new SimpleMessage("usuario", "Este Usuario esta desativado !")).onErrorRedirectTo(this).form();	
+		}
+		
 		logado.loga(usuario);
 		
 		if(logado.isAdmin())

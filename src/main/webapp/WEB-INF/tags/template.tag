@@ -243,18 +243,7 @@
 				<div class="row">
 					<div class="col-md-11 col-md-push-1  col-xs-12">
 						<jsp:invoke fragment="header" />
-						<c:if test="${not empty sucesso}">
-							<div class="alert alert-success">
-								<button type="button" class="close" data-dismiss="alert">×</button>
-								<strong>Sucesso :</strong> . ${ sucesso }.
-							</div>
-						</c:if>
-						<c:if test="${not empty alertar}">
-							<div class="alert alert-success">
-								<button type="button" class="close" data-dismiss="alert">×</button>
-								<strong>Alerta :</strong> . ${ alertar }.
-							</div>
-						</c:if>
+						<c:import url="/WEB-INF/layouts/mensagens.jsp" />
 						<jsp:doBody />
 					</div>
 					<div id="pagefooter">

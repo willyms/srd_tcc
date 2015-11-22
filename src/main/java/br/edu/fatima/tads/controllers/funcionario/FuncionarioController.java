@@ -22,6 +22,7 @@ import br.com.caelum.vraptor.observer.download.ByteArrayDownload;
 import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.observer.upload.UploadSizeLimit;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
+import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.caelum.vraptor.view.Results;
 import br.edu.fatima.entities.acesso.Acesso;
@@ -32,12 +33,13 @@ import br.edu.fatima.entities.repositories.arquivo.ReposArquivo;
 import br.edu.fatima.entities.repositories.func.ReposFuncionario;
 import br.edu.fatima.entities.repositories.setor.ReposSetor;
 import br.edu.fatima.entities.sector.Setor;
+import br.edu.fatima.entities.utils.CategoriaMessage;
 
 import com.google.common.io.ByteStreams;
 
 @Controller
 @Path(value = "/funcionario")
-public class FuncionarioController {
+public class FuncionarioController extends CategoriaMessage{
 	Logger logger = LoggerFactory.getLogger(FuncionarioController.class);
 
 	private  ReposSetor setorNoBanco;
@@ -46,7 +48,11 @@ public class FuncionarioController {
 	private ReposFuncionario funcNobanco;
 	private Validator validator;
 	private Result result;
-
+	private java.util.regex.Pattern pattern;
+	private java.util.regex.Matcher matcher;
+	private static final String IMAGE_PATTERN =  "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+	 
+		
 	@Inject
 	public FuncionarioController(ReposSetor setorNobanco, ReposAcesso acessoNobanco, ReposFuncionario funcNobanco,
 			Result result, ReposArquivo arquivoNobanco, Validator validator) {
@@ -56,6 +62,7 @@ public class FuncionarioController {
 		this.result = result;
 		this.validator = validator;
 		this.arquivoNobanco = arquivoNobanco;
+		this.pattern = java.util.regex.Pattern.compile(IMAGE_PATTERN);
 	}
 
 	/**
@@ -104,14 +111,24 @@ public class FuncionarioController {
 
 	@Post
 	@Path(value = { "/", "" })
-	@UploadSizeLimit(sizeLimit = 40 * 1024 * 1024, fileSizeLimit = 100 * 1024 * 1024)
-	public void novo(@Valid Funcionario funcionario, @NotNull UploadedFile imagem) {
+	@UploadSizeLimit(sizeLimit = 1024 * 1024, fileSizeLimit =  1024 * 1024 * 1024)
+	public void novo(@Valid Funcionario funcionario, 
+			@NotNull(message="selecione uma imagem")  UploadedFile Filedata) {
+		logger.debug("funcionario controller novo");
+		
+		validator.onErrorForwardTo(this).form(funcionario);
+				
+		Arquivo arquivo = upload(Filedata);		
+		
+		if(validateFormator(arquivo.getContentType())){
+			validator.add(new SimpleMessage("funcionario.acesso.setor.nome", "{validator.arquivo.formator}", "funcionario.arquivo.contentType")).onErrorRedirectTo(this).form(funcionario);	
+		}
+		
+		/*validator.validate(arquivo).add(new SimpleMessage("arquivo.contentType", "O Formator da imagem, é diferente de JPG,JPEG e PNG.", "funcionario.arquivo.contentType"))
+			     .onErrorRedirectTo(this).form(funcionario);*/
+		
 		try {
-			logger.debug("funcionario controller novo");
-			Arquivo arquivo = upload(imagem);		
-			validator.validate(arquivo);
-			validator.onErrorRedirectTo(this).form(funcionario);
-
+			
 			// salva imagem no banco de dados
 			arquivoNobanco.novo(arquivo);
 
@@ -121,7 +138,10 @@ public class FuncionarioController {
 			// salvando os setores no banco e pegando retorno do setores com id
 			if (!setorNoBanco.todos().isEmpty()) {
 				funcionario.setAcesso(listaAcessocomIdsetor((List<Acesso>) funcionario.getAcesso(), funcionario.getId()));
-			} else {
+			} else {		
+				if(funcionario.getAcesso() == null){
+					validator.add(new SimpleMessage("funcionario.acesso.setor.nome", "{validator.setor.nome.notnull}", "funcionario.acesso.setor.nome")).onErrorRedirectTo(this).form(funcionario);	
+				}
 				for (Acesso acesso : funcionario.getAcesso()) {
 					setorNoBanco.novo(acesso.getSetor());
 				}
@@ -137,24 +157,24 @@ public class FuncionarioController {
 				// salvando os acesso do funcionario
 				acessoNobanco.novo(acesso);
 			}
-
-			result.include("sucesso", "funcionario cadastrado com sucesso");
+			result.include(SUCESSO, "Funcionario cadastrado com sucesso");
 			result.forwardTo(this).lista(1, null);
 		} catch (PersistenceException e) {
-			result.include("sucesso", "Erro ao tentar cadastra funcionario, no banco de dados.").redirectTo(this).form(funcionario);
-			
-		}		
+			result.include(WARNING, "Erro ao tentar cadastra funcionario, no banco de dados.").redirectTo(this).form(funcionario);
+		}	
 	}
+
+	
 
 	@Post
 	@Path(value = "/edit/")
-	public void editar(@Valid Funcionario funcionario, UploadedFile imagem) {
+	public void editar(@Valid Funcionario funcionario, UploadedFile Filedata) {
 		logger.debug("funcionario controller editar");
 		Arquivo arquivo = null;
 
-		if (imagem != null) {
+		if (Filedata != null) {
 			logger.debug("pegando URI (key da foto) e armazenando no funcionario ... ");
-			arquivo = upload(imagem);
+			arquivo = upload(Filedata);
 			arquivo.setId(funcionario.getArquivo().getId());
 			validator.validate(arquivo);
 		}
@@ -162,7 +182,7 @@ public class FuncionarioController {
 		validator.onErrorRedirectTo(this).form(funcionario);
 
 		// atualizar arquivo no banco de dados
-		if (imagem != null && arquivo != null) {
+		if (Filedata != null && arquivo != null) {
 			arquivoNobanco.atualizar(arquivo);
 		}
 
@@ -178,8 +198,10 @@ public class FuncionarioController {
 			acessoNobanco.novo(acesso);
 		}
 
-		result.include("sucesso", "funcionario alterado com sucesso");
+		result.include(INFOR, "funcionario alterado com sucesso");
 		result.redirectTo(this).lista(1, null);
+		
+		result.permanentlyRedirectTo(this).form(funcionario);
 	}
 
 	@Get
@@ -192,7 +214,7 @@ public class FuncionarioController {
 		Arquivo arquivo = arquivoNobanco.comId(funcionario.getArquivo().getId());
 		arquivoNobanco.remover(arquivo);
 		funcNobanco.remover(funcionario);
-		result.include("sucesso", "funcionario removindo com sucesso");
+		result.include(INFOR, "funcionario removindo com sucesso");
 		result.redirectTo(this).lista(1, null);
 	}
 	
@@ -203,7 +225,7 @@ public class FuncionarioController {
 			result.notFound();
 		}
 		funcNobanco.ativarComId(id);		
-		result.include("sucesso", "funcionario ativo com sucesso");
+		result.include(WARNING, "Funcionario ativo com sucesso");
 		result.redirectTo(this).lista(1, null);
 	}
 	
@@ -214,7 +236,7 @@ public class FuncionarioController {
 			result.notFound();
 		}
 		funcNobanco.desativarComId(id);			
-		result.include("sucesso", "funcionario desativado com sucesso");
+		result.include(WARNING, "Funcionario desativado com sucesso");
 		result.redirectTo(this).lista(1, null);
 	}
 
@@ -235,16 +257,17 @@ public class FuncionarioController {
 
 	// grava imagem no banco de dados ...
 	protected Arquivo upload(UploadedFile filedata) {
-		Arquivo arquivo = new Arquivo();
+		Arquivo arquivo = new Arquivo();		
+		
 		try {
 			arquivo.setNome(filedata.getFileName());
 			arquivo.setConteudo(ByteStreams.toByteArray(filedata.getFile()));
-			arquivo.setContentType(filedata.getContentType());
-
+			arquivo.setContentType(filedata.getContentType());	
+			logger.info("tipo " + filedata.getContentType());
+			return arquivo;
 		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return arquivo;
+			return arquivo;
+		}		
 	}
 
 	protected List<Acesso> listaAcessocomIdsetor(List<Acesso> listaDoform, Long id) {
@@ -285,5 +308,10 @@ public class FuncionarioController {
 		}
 		return listaDoform;
 	}
+	
+	protected boolean validateFormator(String formate){
+		matcher = pattern.matcher(formate);
+		return matcher.matches();
+	}	
 
 }

@@ -7,7 +7,7 @@ import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2015-10-24T13:16:37.324-0200")
+@Generated(value="Dali", date="2015-11-21T09:53:11.922-0200")
 @StaticMetamodel(Setor.class)
 public class Setor_ extends DefaultEntity_ {
 	public static volatile SingularAttribute<Setor, String> nome;

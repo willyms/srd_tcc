@@ -17,7 +17,7 @@ public @interface UniqueKey {
 
    String property();
 
-   String message() default "{validator.geral.Unique.message}";
+   String message() default "{validator.geral.unico}";
 
    Class<?>[] groups() default {};
 

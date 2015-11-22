@@ -5,11 +5,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
 import br.edu.fatima.entities.DefaultEntity;
 import br.edu.fatima.entities.funcionario.Funcionario;
 import br.edu.fatima.entities.sector.Setor;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name="tb_acess")
@@ -29,8 +29,8 @@ public class Acesso  extends DefaultEntity {
 	
 	@Getter
 	@Setter
-	@JoinColumn(name = "sector_id", referencedColumnName = "id")
 	@ManyToOne
+	@JoinColumn(name = "sector_id", referencedColumnName = "id")
 	private Setor setor;
 
 

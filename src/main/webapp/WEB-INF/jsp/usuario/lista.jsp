@@ -109,7 +109,7 @@
 				      		<tr>
 				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.id }</td>
 				        		<td>${u.username }</td>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.ativo }</td>
+				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.ativo ? 'Ativo' : 'Desativo'}</td>
 				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.perfil }</td>
 				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.setor.nome }</td>
 				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">

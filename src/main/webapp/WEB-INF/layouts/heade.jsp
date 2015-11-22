@@ -46,3 +46,4 @@
 		font-size: 22px;
 		}		
 </style>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/srd/css/style_message.css">	

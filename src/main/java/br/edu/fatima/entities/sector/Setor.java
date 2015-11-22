@@ -9,10 +9,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
-import br.edu.fatima.entities.DefaultEntity;
-import br.edu.fatima.entities.acesso.Acesso;
 import lombok.Getter;
 import lombok.Setter;
+import br.edu.fatima.entities.DefaultEntity;
+import br.edu.fatima.entities.acesso.Acesso;
 
 @Entity
 @Table(name = "tb_sector")

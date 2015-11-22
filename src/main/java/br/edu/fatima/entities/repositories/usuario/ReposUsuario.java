@@ -9,6 +9,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,10 @@ import br.edu.fatima.entities.usuario.Perfil;
 import br.edu.fatima.entities.usuario.Usuario;
 import br.edu.fatima.entities.usuario.Usuario_;
 import br.edu.fatima.entities.utils.CriptografiaUtil;
+import br.edu.fatima.entities.utils.interfac.LoginAvailable;
 
 @Stateless
-public class ReposUsuario extends Repository<Usuario> {
+public class ReposUsuario extends Repository<Usuario> implements ConstraintValidator<LoginAvailable, Usuario> {
 	
 	Logger logger = LoggerFactory.getLogger(ReposUsuario.class);
 	private static final Integer TAMANHODALISTAGEMPAGINACAO = 10;
@@ -117,7 +120,21 @@ public class ReposUsuario extends Repository<Usuario> {
 			return null;
 		}		
 	}
-
+	
+	public Usuario findbyUsername(String username) {
+		logger.info("verifica usuario root ");
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
+		Root<Usuario> form =  cq.from(Usuario.class);
+		
+		cq.where(cb.equal(form.get(Usuario_.username), username));
+		try {			
+			return em.createQuery(cq).getSingleResult();	
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
 	public Boolean findbyName(String username) {
 		logger.info("verifica usuario root ");
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -139,5 +156,16 @@ public class ReposUsuario extends Repository<Usuario> {
 			novo(usuario);
 			return true;
 		}
+	}
+
+	@Override
+	public void initialize(LoginAvailable arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isValid(Usuario usuario, ConstraintValidatorContext context) {
+		return comLoginESenha(usuario.getUsername(), CriptografiaUtil.criptografarString(usuario.getPassword())) != null;
 	}
 }

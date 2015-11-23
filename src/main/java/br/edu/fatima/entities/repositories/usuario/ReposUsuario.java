@@ -24,12 +24,13 @@ import br.edu.fatima.entities.utils.CriptografiaUtil;
 import br.edu.fatima.entities.utils.interfac.LoginAvailable;
 
 @Stateless
-public class ReposUsuario extends Repository<Usuario> implements ConstraintValidator<LoginAvailable, Usuario> {
-	
+public class ReposUsuario extends Repository<Usuario> implements
+		ConstraintValidator<LoginAvailable, Usuario> {
+
 	Logger logger = LoggerFactory.getLogger(ReposUsuario.class);
 	private static final Integer TAMANHODALISTAGEMPAGINACAO = 10;
-	
-	public List<String> listaTodoUsuarioCadastrado(){
+
+	public List<String> listaTodoUsuarioCadastrado() {
 		List<String> nomeSetores = new ArrayList<>();
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -37,8 +38,8 @@ public class ReposUsuario extends Repository<Usuario> implements ConstraintValid
 			Root<Usuario> from = cq.from(Usuario.class);
 			cq.where(from.get(Usuario_.setor).isNotNull());
 			for (Usuario setor : em.createQuery(cq).getResultList()) {
-				nomeSetores.add(setor.getSetor().getNome());				
-			}			
+				nomeSetores.add(setor.getSetor().getNome());
+			}
 			return nomeSetores;
 		} catch (NoResultException e) {
 			return nomeSetores;
@@ -68,7 +69,8 @@ public class ReposUsuario extends Repository<Usuario> implements ConstraintValid
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(Usuario.class)));
-		return em.createQuery(countQuery).getSingleResult() != null ? em.createQuery(countQuery).getSingleResult() : 1L;
+		return em.createQuery(countQuery).getSingleResult() != null ? em
+				.createQuery(countQuery).getSingleResult() : 1L;
 	}
 
 	public List<Usuario> filter(String nome) {
@@ -93,54 +95,56 @@ public class ReposUsuario extends Repository<Usuario> implements ConstraintValid
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
 			Root<Usuario> form = cq.from(Usuario.class);
-			cq.where(cb.and(cb.equal(form.get(Usuario_.username), v_login),
-					cb.equal(form.get(Usuario_.password), v_senha)), cb.equal(form.get(Usuario_.ativo), true));
+			cq.where(
+					cb.and(cb.equal(form.get(Usuario_.username), v_login),
+							cb.equal(form.get(Usuario_.password), v_senha)),
+					cb.equal(form.get(Usuario_.ativo), true));
 
 			return em.createQuery(cq).getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}
-		
+
 	}
-		
-	public Usuario verificarFuncionario(Funcionario funcionario){	
+
+	public Usuario verificarFuncionario(Funcionario funcionario) {
 		logger.debug("verificar se o funcionario é administrador do sistema!");
-		
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
-		Root<Usuario> form =  cq.from(Usuario.class);
-		
+		Root<Usuario> form = cq.from(Usuario.class);
+
 		cq.where(cb.equal(form.get(Usuario_.funcionario), funcionario));
-		
-		try {	
+
+		try {
 			Usuario u = em.createQuery(cq).getSingleResult();
-			logger.info("usuario encontrando : "+ (u != null));
+			logger.info("usuario encontrando : " + (u != null));
 			return u;
-		} catch (NoResultException e) {
-			return null;
-		}		
-	}
-	
-	public Usuario findbyUsername(String username) {
-		logger.info("verifica usuario root ");
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
-		Root<Usuario> form =  cq.from(Usuario.class);
-		
-		cq.where(cb.equal(form.get(Usuario_.username), username));
-		try {			
-			return em.createQuery(cq).getSingleResult();	
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
-	
+
+	public Usuario findbyUsername(String username) {
+		logger.info("verifica usuario root ");
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
+		Root<Usuario> form = cq.from(Usuario.class);
+
+		cq.where(cb.equal(form.get(Usuario_.username), username));
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
 	public Boolean findbyName(String username) {
 		logger.info("verifica usuario root ");
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Usuario> cq = cb.createQuery(Usuario.class);
-		Root<Usuario> form =  cq.from(Usuario.class);
-		
+		Root<Usuario> form = cq.from(Usuario.class);
+
 		cq.where(cb.equal(form.get(Usuario_.username), username));
 		try {
 			Usuario user = em.createQuery(cq).getSingleResult();
@@ -151,8 +155,10 @@ public class ReposUsuario extends Repository<Usuario> implements ConstraintValid
 			usuario.setAtivo(true);
 			usuario.setPerfil(Perfil.ADMIN);
 			usuario.setUsername(username);
-			usuario.setPassword(CriptografiaUtil.criptografarString("nuncavaodescobrir"));
-			usuario.setPassVerify(CriptografiaUtil.criptografarString("nuncavaodescobrir"));
+			usuario.setPassword(CriptografiaUtil
+					.criptografarString("nuncavaodescobrir"));
+			usuario.setPassVerify(CriptografiaUtil
+					.criptografarString("nuncavaodescobrir"));
 			novo(usuario);
 			return true;
 		}
@@ -161,11 +167,12 @@ public class ReposUsuario extends Repository<Usuario> implements ConstraintValid
 	@Override
 	public void initialize(LoginAvailable arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public boolean isValid(Usuario usuario, ConstraintValidatorContext context) {
-		return comLoginESenha(usuario.getUsername(), CriptografiaUtil.criptografarString(usuario.getPassword())) != null;
+		return comLoginESenha(usuario.getUsername(),
+				CriptografiaUtil.criptografarString(usuario.getPassword())) != null;
 	}
 }

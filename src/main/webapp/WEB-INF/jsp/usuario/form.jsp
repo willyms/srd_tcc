@@ -180,6 +180,12 @@
 							    background-color:#f2dede;
 							    border-color:#ebccd1;
 							}
+							.error-text{
+								background-color: #C0C0C0;
+								color: #fff;
+								font-weight: bold;
+							}
+							
 		</style>
 	</jsp:attribute>
 	<jsp:attribute name="script">
@@ -287,60 +293,55 @@
 				</c:if>
 				<input type="hidden" name="id" value="${empty u.id ? null : u.id }" />
 				<fieldset class="form-group">
-   					 <label for="usuario">Usuário</label>
+   					 <label for="usuario"><fmt:message key="srd.label.username"/></label>
    						 <input value="${u.username}" ng-required="true" type="text" maxlength="15" name="usuario.username" class="form-control" id="usuario"
 							title="" required x-moz-errormessage=""  autofocus="autofocus" />
+						<span class="error">${errors.from('funcionario.ativo').join(' - ')}</span>  	
   						<span class="error">${errors.from('usuario.username').join(' - ')}</span>  	
   				</fieldset> 
   				<fieldset class="form-group">
-   					 <label for="passoriginal">Senha</label>
+   					 <label for="passoriginal"><fmt:message key="srd.label.pass"/></label>
    						 <input value="${u.password}" ng-required="true" type="password" maxlength="15" name="usuario.password" class="form-control" id="passoriginal" 
 							required data-toggle="popover" title="Nivel da Senha" data-content="Digiter sua senha..." x-moz-errormessage="" />
   						<span class="error">${errors.from('usuario.password').join(' - ')}</span>  	
   				</fieldset> 
   				
   				<fieldset class="form-group">
-   					 <label for="passconfimar">Confirmar Senha</label>
+   					 <label for="passconfimar"><fmt:message key="srd.label.pass.verif"/></label>
    						 <input value="${u.passVerify}" ng-required="true" type="password" maxlength="15"  name="usuario.passVerify" class="form-control" id="passconfimar" 
 							title="" required x-moz-errormessage="" />
   						<span class="error">${errors.from('usuario.passVerify').join(' - ')}</span>  	 	
   				</fieldset> 
   			
   				<fieldset class="form-group">
-   					 <label for="perfil">Perfil</label>
+   					 <label for="perfil"><fmt:message key="srd.label.perfil"/></label>
    					  <div class="funkyradio">
-	   					<c:forEach items="${perfil}" var="p">	   					
-	   							<c:if test="${not empty f.id or not empty u.funcionario.id}">
-	   								<c:if test="${p eq 'ADMIN'}">
-		   								 <div class="funkyradio-default">
-		   									<input type="radio" name="usuario.perfil" id="${p}" data-ng-model="my.perfil" value="${p}"  ng-required="true" checked="checked" />
-		   									<label for="${p}">${p}</label>
-		   								 </div>
-	   								 </c:if>
-	   							</c:if>	
-	   							<c:if test="${empty f.id and empty u.funcionario.id}">
-	   								<c:if test="${p ne 'ADMIN'}">
-		   								 <div class="funkyradio-default">
-		   									<input type="radio" name="usuario.perfil" id="${p}" data-ng-model="my.perfil" value="${p}"  ng-required="true" checked="checked" />
-		   									<label for="${p}">${p}</label>
-		   								 </div>
-	   								 </c:if>
-	   							</c:if>		   								   							   							  						 
-   						</c:forEach>   						
+	   					<div class="funkyradio-default">
+	   						 <c:choose>
+		   					  	<c:when test="${f.id != null}">
+		   					  		<input type="radio" name="usuario.perfil" id="ADMIN" data-ng-model="my.perfil" value="ADMIN"  ng-required="true" ng-checked="true" />
+									<label for="ADMIN"><fmt:message key="srd.label.perfil.admin"/></label>
+		   					  	</c:when>		   					  
+		   					  	 <c:otherwise>
+							        <input type="radio" name="usuario.perfil" id="USER" data-ng-model="my.perfil" value="USER"  ng-required="true" ng-checked="true" />
+									<label for="USER"><fmt:message key="srd.label.perfil.user"/></label>
+							      </c:otherwise>
+		   					 </c:choose>
+						 </div>		
    					 </div>
-  						<span class="error"></span>  	
+  					<span class="error"></span>  	
   				</fieldset> 
   				
   				<fieldset class="form-group" >
-   					 <label for="perfil">Status</label>
+   					 <label for="perfil"><fmt:message key="srd.label.status"/></label>
    					  <div class="funkyradio">	   					
    						 <div class="funkyradio-primary">
    							<input type="radio" value="TRUE" name="usuario.ativo" id="ativo" ng-checked="true"/>
-   							<label for="ativo">Ativo</label>
+   							<label for="ativo"><fmt:message key="srd.label.status.ativo"/></label>
    						 </div>
    						 <div class="funkyradio-primary">
    							<input type="radio" value="FALSE" name="usuario.ativo" id="desativo"/>
-   							<label for="desativo">Desativo</label>
+   							<label for="desativo"><fmt:message key="srd.label.status.desativo"/></label>
    						 </div>
    					 </div>
   						<span class="error"></span>  	
@@ -348,15 +349,16 @@
   				  				
   				<c:if test="${empty f.id and empty u.funcionario.id}">
 	  				<fieldset class="form-group">
-	  					<label for="textbox">Filter</label>
+	  					<label for="textbox"><fmt:message key="srd.label.filtro"/></label>
 	  					<input id="textbox" class="form-control" type="text" placeholder="digiter o nome para filtar na seleção..." />
-						<label for="textbox">Setores :</label>	
-						<select id="select" name="usuario.setor.id" class="form-control">
+						<label for="textbox"><fmt:message key="srd.label.setores"/></label>	
+						<select id="select" name="usuario.setor.id" class="form-control" ng-required="true">
 							<option class="1" value="${u.setor.ativo ? u.setor.id : null}">${u.setor.nome}</option>
 							<c:forEach items="${lista_setor}" var="s">
-								 <option class="1" value="${s.id}">${s.nome}${s.ativo ? '' : ' <- desativado'}</option>	
+								 <option class="${s.ativo ? '' : 'error-text'}" value="${s.id}">${s.nome}${s.ativo ? '' : '  desativado'}</option>	
 							</c:forEach>									  
 						  </select>
+						  <span class="error">${errors.from('setor.nome').join(' - ')}</span> 
 	  				</fieldset>
   				</c:if>
   				 <div class="col-md-offset-5 col-xs-offset-1">

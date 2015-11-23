@@ -347,9 +347,9 @@
 				<configuration>
 					<path>/${project.build.finalName}</path>
 					<update>true</update>
-					<url>http://localhost:8080/manager/text</url>
+					<url>http://164.41.150.174:8080/manager/text</url>
 					<username>admin</username>
-					<password>t0mcat</password>
+					<password>0mn1tr1x</password>
 				</configuration>
 			</plugin>
 		</plugins>

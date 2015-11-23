@@ -44,6 +44,11 @@
 	.text-logo{
 		color: white;
 		font-size: 22px;
+		}
+		.error{
+			color: red;
+			font-weight: bold;
+			margin-left: 2%;
 		}		
 </style>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/srd/css/style_message.css">	

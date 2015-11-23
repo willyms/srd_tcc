@@ -1,5 +1,7 @@
 package br.edu.fatima.tads.controllers.usuario;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
 
@@ -12,19 +14,22 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.IncludeParameters;
+import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.edu.fatima.entities.funcionario.Funcionario;
 import br.edu.fatima.entities.repositories.func.ReposFuncionario;
 import br.edu.fatima.entities.repositories.setor.ReposSetor;
 import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
+import br.edu.fatima.entities.sector.Setor;
 import br.edu.fatima.entities.usuario.Perfil;
 import br.edu.fatima.entities.usuario.Usuario;
+import br.edu.fatima.entities.utils.CategoriaMessage;
 import br.edu.fatima.entities.utils.CriptografiaUtil;
 import br.edu.fatima.entities.utils.SrdUtils;
 
 @Controller
 @Path(value = {"/usuario"})
-public class UsuarioController {
+public class UsuarioController extends CategoriaMessage {
 
 	Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 	
@@ -55,8 +60,7 @@ public class UsuarioController {
 	@Get
 	@Path(value = {"/"})
 	public void form(Usuario usuario, Funcionario func){
-		result.include("perfil", Perfil.values())
-		.include("lista_setor", setorNoBanco.retornaTodoSetorNaoCadastrado())
+		result.include("lista_setor", setorNoBanco.retornaTodoSetorNaoCadastrado())
 		.include("u", usuario)
 		.include("f", func);
 	}
@@ -90,7 +94,7 @@ public class UsuarioController {
 		if(!SrdUtils.isNullOrBlank(filter)){
 			result.include("totalpagina", 1)
 			.include("lista_usuario", usuarioNoBanco.filter(filter))
-			.include("filter", filter).include("mensagem_resultado", "Não foram encontrado, nenhum resgistro");
+			.include("filter", filter).include(WARNING, "Não foram encontrado, nenhum resgistro");
 		}
 	}
 	
@@ -109,17 +113,38 @@ public class UsuarioController {
 	@Post
 	@Path(value = {"/"})
 	public void gravar(@Valid Usuario usuario, Long id){
-		logger.debug("gravando o usuario no banco de dados ....");		
-	
+		logger.debug("gravando o usuario no banco de dados ....");	
 		validator.onErrorForwardTo(this).form(usuario, new Funcionario());
+		Optional<Funcionario> funcOptional = Optional.ofNullable(usuario.getFuncionario());
+		Optional<Setor> setorOptional = Optional.ofNullable(usuario.getSetor());
+		
+				
+		if(setorOptional.isPresent())
+		{
+			Boolean status = setorNoBanco.comId(setorOptional.get().getId()).isAtivo();
+			if(!status){ 
+				validator.add(
+						new SimpleMessage("setor.nome", "Setor desativado, selecione outro.", "setor.nome"))
+						.onErrorRedirectTo(this)
+						.form(usuario, null);}
+			usuario.setPerfil(Perfil.USER);
+		}
+		
+		if(funcOptional.isPresent())
+		{
+			Boolean status = funcNabanco.comId(funcOptional.get().getId()).isAtivo();
+			if(!status){ validator.add(new SimpleMessage("funcionario.ativo", "Funcionario desativado, nao poder ser administrator.", "funcionario.ativo")).onErrorRedirectTo(this).form(usuario, usuario.getFuncionario());}	
+			usuario.setPerfil(Perfil.ADMIN);
+		}
+		
 		if(id == null){
-		/*	usuario.setPassword(CriptografiaUtil.criptografarString(usuario.getPassword()));
-			usuario.setPassVerify(CriptografiaUtil.criptografarString(usuario.getPassVerify()));*/
-			
+		    usuario.setPassword(CriptografiaUtil.criptografarString(usuario.getPassword()));
+			usuario.setPassVerify(CriptografiaUtil.criptografarString(usuario.getPassVerify()));
 			usuarioNoBanco.novo(usuario);
+			result.include(SUCESSO, "Usuario cadastro com sucesso !");
 		}else{
 			usuario.setId(id);
-			usuarioNoBanco.atualizar(usuario);
+			//usuarioNoBanco.atualizar(usuario);
 		}		
 		result.redirectTo(this).lista(1, null);
 	}

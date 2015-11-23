@@ -39,7 +39,7 @@
 	</jsp:attribute>
 	<jsp:body>	
 		<div class="row">	
-			 <div class="col-lg-12 col-lg-offset-4">
+			 <div class="col-md-12 col-md-offset-4 col-xs-12 col-xs-offset-2">
 			 	<ul id="pagination-demo" class="pagination"></ul>
 			 </div>
 		 </div>

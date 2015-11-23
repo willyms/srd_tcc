@@ -8,6 +8,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.edu.fatima.entities.repositories.func.ReposFuncionario;
 import br.edu.fatima.entities.repositories.historico.ReposHistorico;
 import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
@@ -15,14 +18,22 @@ import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
 @Named("formatter")
 @ApplicationScoped
 public class Formatter {
-	private static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+	
+	Logger logger = LoggerFactory.getLogger(Formatter.class);
+	
+	private static final DateTimeFormatter PATTERNDATETIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+	private static final DateTimeFormatter PATTERNDATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	@Inject private ReposHistorico historicoNobanco;
 	@Inject private ReposFuncionario funcionarioNoBanco;
 	@Inject private ReposUsuario usuarioNobanco;
 	
 	
 	public String localDateTime(LocalDateTime value) {
-		return value.format(PATTERN);
+		return value.format(PATTERNDATETIME);
+	}
+	
+	public String localDate(LocalDate value) {
+		return value.format(PATTERNDATE);
 	}
 	
 	public Long retornaQuantidadeFuncionario(LocalDate date, int page, String nome){
@@ -35,6 +46,6 @@ public class Formatter {
 	}
 	
 	public boolean Eadministrator(Long id){
-		return (usuarioNobanco.verificarFuncionario(funcionarioNoBanco.comId(id)) != null);
+		return (usuarioNobanco.verificarFuncionario(funcionarioNoBanco.comId(id)) == null);
 	}
 }

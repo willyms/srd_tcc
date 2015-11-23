@@ -23,7 +23,7 @@ import br.edu.fatima.entities.utils.interfac.UniqueKey;
 
 @Entity
 @Table(name = "tb_user")
-@EqualsAndHashCode(exclude={"username", "password"}, callSuper=true)
+/*@EqualsAndHashCode(exclude={"username", "password"}, callSuper=true)*/
 @Matches(fields={"password"}, verifyFields={"passVerify"})
 //@UniqueKey.List(value = { @UniqueKey(property = "username"), @UniqueKey(property = "perfil") }) // more than one unique keys
 @UniqueKey(property = "username")
@@ -34,11 +34,11 @@ public class Usuario extends DefaultEntity {
 	private static final long serialVersionUID = -2465128315467405095L;
 
 	@Setter @Getter
-	@Column(name = "cl_username", unique= true)	
+	@Column(name = "cl_username", unique= true, updatable=false)	
 	private String username;
 	
 	@Setter @Getter
-	@Column(name = "cl_password", unique= true)	
+	@Column(name = "cl_password", updatable=false)	
 	@Size(min=6, max=50, message="{validator.usuario.password.tamanho}")
 	private String password;	
 	
@@ -51,12 +51,12 @@ public class Usuario extends DefaultEntity {
 	
 	@Getter @Setter
 	@OneToOne(optional = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "sector_id", referencedColumnName="id")
+    @JoinColumn(name = "sector_id", referencedColumnName="id", updatable=false)
 	private Setor setor;
 	
 	@Getter @Setter
 	@OneToOne(optional= true, fetch = FetchType.EAGER)
-	@JoinColumn(name = "cl_employers_id", referencedColumnName="id")
+	@JoinColumn(name = "cl_employers_id", referencedColumnName="id", updatable=false)
 	private Funcionario funcionario;
 	
 	@AssertTrue(message="{validator.usuario.passverify}")

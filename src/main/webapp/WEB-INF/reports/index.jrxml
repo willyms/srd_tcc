@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.0.4.final using JasperReports Library version 6.0.2  -->
-<!-- 2015-11-03T08:50:08 -->
+<!-- Created with Jaspersoft Studio version 6.1.1.final using JasperReports Library version 6.1.1  -->
+<!-- 2015-11-27T15:27:05 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="index" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="69916361-daa6-41b4-9bdc-26aaa7f5ddc5">
 	<style name="Style1" isDefault="true" hTextAlign="Center" hImageAlign="Center" vTextAlign="Middle" markup="styled" fontName="Arial" isBold="true"/>
 	<parameter name="LOGO" class="java.lang.String"/>
 	<parameter name="MODELO" class="java.lang.String"/>
+	<parameter name="QRCODE" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -55,7 +56,7 @@
 			</textField>
 			<image>
 				<reportElement x="347" y="10" width="204" height="165" uuid="4ffbc9e5-71bc-4b6d-83be-e962acc4e919"/>
-				<imageExpression><![CDATA["http://chart.apis.google.com/chart?chs=450x450&cht=qr&chl="+$F{id}+"&choe=UTF-8"]]></imageExpression>
+				<imageExpression><![CDATA[$P{QRCODE}]]></imageExpression>
 			</image>
 		</band>
 	</detail>

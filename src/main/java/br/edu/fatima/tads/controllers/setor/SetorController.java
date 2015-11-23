@@ -22,10 +22,11 @@ import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.edu.fatima.entities.repositories.setor.ReposSetor;
 import br.edu.fatima.entities.sector.Setor;
+import br.edu.fatima.entities.utils.CategoriaMessage;
 
 @Controller
 @Path(value = "/setor")
-public class SetorController {
+public class SetorController  extends CategoriaMessage{
 
 	Logger logger = LoggerFactory.getLogger(SetorController.class);
 	private ReposSetor setorNobanco;
@@ -126,5 +127,27 @@ public class SetorController {
 		setor.setId(id);
 		setorNobanco.atualizar(setor);
 		result.use(status()).ok();
+	}
+	
+	@Get
+	@Path(value = "/ativar/{id}")
+	public void ativar(Long id){
+		if(setorNobanco.comId(id) == null){
+			result.notFound();
+		}
+		setorNobanco.ativarComId(id);		
+		result.include(WARNING, "Setor ativo com sucesso");
+		result.redirectTo(this).lista(1, null);
+	}
+	
+	@Get
+	@Path(value = "/desativar/{id}")
+	public void desativar(Long id){
+		if(setorNobanco.comId(id) == null){
+			result.notFound();
+		}
+		setorNobanco.desativarComId(id);			
+		result.include(WARNING, "Setor desativado com sucesso");
+		result.redirectTo(this).lista(1, null);
 	}
 }

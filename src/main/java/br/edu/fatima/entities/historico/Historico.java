@@ -1,7 +1,6 @@
 package br.edu.fatima.entities.historico;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import javax.persistence.Column;
@@ -10,11 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
 import br.edu.fatima.entities.DefaultEntity;
 import br.edu.fatima.entities.funcionario.Funcionario;
 import br.edu.fatima.entities.sector.Setor;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name="tb_history_acess")
@@ -27,13 +26,13 @@ public class Historico  extends DefaultEntity{
 
 	@Getter
 	@Setter
-	@Column(name = "cl_date_entry")	   
-	private LocalDate dataentrada;
+	@Column(name = "cl_date_entry", updatable = false)	   
+	private LocalDate dataentrada = LocalDate.now();
 	
 	@Getter
 	@Setter
-	@Column(name = "cl_time_entry")	   
-	private LocalTime horaentrada;
+	@Column(name = "cl_time_entry", updatable= false)	   
+	private LocalTime horaentrada = LocalTime.now();
 
 	@Getter
 	@Setter

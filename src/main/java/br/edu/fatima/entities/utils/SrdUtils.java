@@ -3,6 +3,12 @@ package br.edu.fatima.entities.utils;
 public class SrdUtils {
 	
 	public static boolean isNullOrBlank(String param) {
+		if(isNull(param)){
+			return true;
+		}
+		if(isEmpty(param)){
+			return true;
+		}
         if (isNull(param) || param.trim().length() == 0) {
             return true;
         }

@@ -140,11 +140,12 @@
 	<div ng-init="funcionarioId=${not empty f.id? f.id : 'null'};required=${not empty f.id? false : true}">	
 	      <div class="row">
 			<c:if test="${not empty errors}">
-  				  <ul class="error-messages">
+  				   <div class="alert alert-warning">
+  				   	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
      			   <c:forEach var="error" items="${errors}">
-      			      <li class="${error.category}">${error.message}</li>
+  						<strong>Aviso :</strong>  ${error.message} <br />.
      			   </c:forEach>
-   				 </ul>
+   				 </div>
 			</c:if>
 	  </div> 	
 	  		<c:if test="${empty f.id}">
@@ -154,8 +155,13 @@
     			</div> 
 			</c:if>
 			<c:if test="${not empty f.id}">
-				<div class="col-sm-4">							
-					<a href="${f.ativo ? linkTo[FuncionarioController].desativar(f.id) : linkTo[FuncionarioController].ativar(f.id)}" class="btn ${f.ativo ? 'btn-success' : 'btn-danger' } btn-sm"><span class="glyphicon ${f.ativo ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>&nbsp; ${f.ativo ? 'Ativo':'Desativo' }</a>
+				<div class="row ">
+		   			<div class="col-sm-4 col-sm-offset-0">							
+						<a data-toggle="tooltip" title="Funcionário ${f.ativo ? 'Ativado' : 'Desativado'}, para ${f.ativo ? 'Desativar' : 'Ativar'} clicar aqui." href="${f.ativo ? linkTo[FuncionarioController].desativar(f.id) : linkTo[FuncionarioController].ativar(f.id)}" class="btn ${f.ativo ? 'btn-success' : 'btn-danger' } btn-sm">
+							<span class="glyphicon ${f.ativo ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+							&nbsp; ${f.ativo ? 'Ativado':'Desativado' }
+						</a>
+					</div>		   		
 				</div>
 				<form name="demoForm" method="POST" action="${linkTo[FuncionarioController].editar}" enctype="multipart/form-data">
 					<input type="hidden" name="_method" value="put" />
@@ -207,65 +213,66 @@
 								</label>
 							</div>
 						</div>	
-  					<!-- <div class="callout-light  fade-in-b">  					
-  						<div ng-repeat="setor in lista_setores" class="col-sm-3">
-  						<label class="c-input c-checkbox">
-  							 <input type="checkbox" name="funcionario.acesso[{{ lista_setores.indexOf(setor) }}].setor.nome" value="{{ setor.nome }}" ng-checked="{{setor.check}}" >
-  								<span class="c-indicator"></span>
-  								{{ setor.nome }} 
-  						
-						</label>		
-						</div>
-					</div>		 -->				
 					</div>
 				</div>
 				<br />
-				<fieldset class="form-group col-sm-6 col-xs-12">
-						<div class="row" id="exDateTime">      						
+				<fieldset class="form-group col-md-6 col-sm-6 col-xs-12">
+						<div id="exDateTime">      						
           					<label class="control-label"><fmt:message key="srd.label.data.inicio"/></label>
+          					
           					<div class="input-group date" id="datepicker">
-          					<c:if test="${ not empty f.dataentrada }">
-            					<input value="<tt:localDate date="${f.dataentrada}" />" class="form-control " name="funcionario.dataentrada" pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" />
-            				</c:if>
-            				<c:if test="${empty f.dataentrada }">
-            					<input  class="form-control" name="funcionario.dataentrada"  pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$"/>
-            				</c:if>
+	          					<c:choose>
+	          					<c:when test="${ not empty f.dataentrada }">
+	            					<input value="<tt:localDate date="${f.dataentrada}" />" class="form-control " name="funcionario.dataentrada" pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" />
+	          					</c:when>
+	          					<c:otherwise>
+	            					<input  class="form-control" name="funcionario.dataentrada"  pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$"/>          					
+	          					</c:otherwise>
+	          					</c:choose>
             				<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>   
       						</div><!--/col-->
       					</div>
+      					
       		  </fieldset>
-    		  <fieldset class="form-group col-sm-6 col-xs-12"> 
+    		  <fieldset class="form-group col-md-6 col-sm-6 col-xs-12"> 
          			 <label class="control-label"><fmt:message key="srd.label.hora.inicio"/></label>
        				 <div class="input-group" id="timepicker">
       				      <input value="${f.horaentrada }" type="text" class="form-control " name="funcionario.horaentrada" />
       				      <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span> 
      				</div><!--/col-->
     		  </fieldset>
-    		  <fieldset class="form-group col-sm-6 col-xs-12">
-						<div class="row" id="exDateTime">      						
-          					<label class="control-label"><fmt:message key="srd.label.data.termino"/></label>
-          					<div class="input-group date" id="datepicker2">
-            				<c:if test="${ not empty f.datasaida }">
-            					<input  value="<tt:localDate date="${f.datasaida}" />" class="form-control" name="funcionario.datasaida" pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" />
-            				</c:if>
-            				<c:if test="${empty f.datasaida }">
-            					<input class="form-control" name="funcionario.datasaida"  pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$"/>
-            				</c:if>
-            				<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>   
-      						</div><!--/col-->
-      					</div>
+    		  <fieldset class="form-group col-md-6 col-sm-6 col-xs-12">
+    		  	<span class="error">${errors.from('funcionario.dataentrada').join(' - ')}</span><br />
+				<div id="exDateTime">      						
+	       			<label class="control-label"><fmt:message key="srd.label.data.termino"/></label>
+	       				<div class="input-group date" id="datepicker2">
+	        				<c:choose>
+	        					<c:when test="${ not empty f.datasaida }">
+	          						<input  value="<tt:localDate date="${f.datasaida}" />" class="form-control" name="funcionario.datasaida" pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$" />          					
+	        					</c:when>
+	        					<c:otherwise>
+	          						<input class="form-control" name="funcionario.datasaida"  pattern="[0-9]{2}\/[0-9]{2}\/[0-9]{4}$"/>          					
+	        					</c:otherwise>
+	        				</c:choose>
+	           				<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>   
+	   					</div><!--/col-->
+	   			</div>
+	   			<span class="error">${errors.from('funcionario.datasaida').join(' - ')}</span><br />
       		  </fieldset>
-    		  <fieldset class="form-group col-sm-6 col-xs-12"> 
+    		  <fieldset class="form-group col-md-6 col-sm-6 col-xs-12"> 
          			 <label class="control-label"><fmt:message key="srd.label.hora.termino"/></label>
        				 <div class="input-group" id="timepicker2">
       				      <input value="${f.horasaida}" type="text" class="form-control" name="funcionario.horasaida" />
       				      <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span> 
      				</div><!--/col-->
-    		  </fieldset>				
-  				 <div class="col-md-offset-5 col-xs-offset-1">
+     				<span class="error">${errors.from('funcionario.horasaida').join(' - ')}</span><br />
+    		  </fieldset>		
+    		  		<div class="clearfix"></div>
+  				 <div class="col-md-offset-5 col-xs-offset-1 clearfix">
 		  			<button type="submit" class="btn btn-primary"><fmt:message key="srd.botao.submit"/></button>
 		  			<a href="${linkTo[HomeController].index}" type="button" class="btn btn-warning" ><fmt:message key="srd.botao.cancelar"/></a>
   				</div> 	
+
 			</form>	
 			</div>
 	</jsp:body>

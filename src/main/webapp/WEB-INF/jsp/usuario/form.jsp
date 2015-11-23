@@ -286,12 +286,41 @@
 		<script src="${pageContext.request.contextPath}/js/controllerUsuario.js"></script>
 	</jsp:attribute>
 	<jsp:body>	
-		<div ng-controller="ctrlUsuario">		
-			<form name="demoForm" method="POST" action="${linkTo[UsuarioController].gravar}">
+		 <div class="row">
+			<c:if test="${not empty errors}">
+  				   <div class="alert alert-warning">
+  				   	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+     			   <c:forEach var="error" items="${errors}">
+  						<strong>Aviso :</strong>  ${error.message} <br />.
+     			   </c:forEach>
+   				 </div>
+			</c:if>
+	  </div> 	
+		<div ng-controller="ctrlUsuario">	
+		<c:choose>
+		   	<c:when test="${u.id != null}">	
+		   		<div class="row ">
+		   			<div class="col-sm-4 col-sm-offset-0">							
+						<a data-toggle="tooltip" title="Usuário ${u.ativo ? 'Ativado' : 'Desativado'}, para ${u.ativo ? 'Desativar' : 'Ativar'} clicar aqui." href="${u.ativo ? linkTo[UsuarioController].desativar(u.id) : linkTo[UsuarioController].ativar(u.id)}" class="btn ${u.ativo ? 'btn-success' : 'btn-danger' } btn-sm">
+							<span class="glyphicon ${u.ativo ? 'glyphicon-ok' : 'glyphicon-remove'}"></span>
+							&nbsp; ${u.ativo ? 'Ativado':'Desativado' }
+						</a>
+					</div>		   		
+				</div>
+				<form name="demoFormedit" method="POST" action="${linkTo[UsuarioController].editar}" >
+						<input type="hidden" name="_method" value="put" />
+						<input type="hidden" name="usuario.id" value="${u.id }" />						
+			</c:when>		
+			<c:otherwise>
+				<form name="demoForm" method="POST" action="${linkTo[UsuarioController].gravar}">
+				<input type="hidden" value="TRUE" name="usuario.ativo" />
+			</c:otherwise>
+		</c:choose>
+			
 				<c:if test="${not empty f.id or not empty u.funcionario.id}">
 					<input type="hidden" name="usuario.funcionario.id" value="${empty f.id ? u.funcionario.id : f.id }"  />
 				</c:if>
-				<input type="hidden" name="id" value="${empty u.id ? null : u.id }" />
+				
 				<fieldset class="form-group">
    					 <label for="usuario"><fmt:message key="srd.label.username"/></label>
    						 <input value="${u.username}" ng-required="true" type="text" maxlength="15" name="usuario.username" class="form-control" id="usuario"
@@ -330,21 +359,6 @@
 						 </div>		
    					 </div>
   					<span class="error"></span>  	
-  				</fieldset> 
-  				
-  				<fieldset class="form-group" >
-   					 <label for="perfil"><fmt:message key="srd.label.status"/></label>
-   					  <div class="funkyradio">	   					
-   						 <div class="funkyradio-primary">
-   							<input type="radio" value="TRUE" name="usuario.ativo" id="ativo" ng-checked="true"/>
-   							<label for="ativo"><fmt:message key="srd.label.status.ativo"/></label>
-   						 </div>
-   						 <div class="funkyradio-primary">
-   							<input type="radio" value="FALSE" name="usuario.ativo" id="desativo"/>
-   							<label for="desativo"><fmt:message key="srd.label.status.desativo"/></label>
-   						 </div>
-   					 </div>
-  						<span class="error"></span>  	
   				</fieldset> 
   				  				
   				<c:if test="${empty f.id and empty u.funcionario.id}">

@@ -1,6 +1,11 @@
 package br.edu.fatima.tads.controllers.usuario.auth;
 
+import java.io.ByteArrayOutputStream;
+
 import javax.inject.Inject;
+
+import net.glxn.qrgen.QRCode;
+import net.glxn.qrgen.image.ImageType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +19,7 @@ import br.com.caelum.vraptor.observer.download.ByteArrayDownload;
 import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
+import br.com.caelum.vraptor.view.Results;
 import br.edu.fatima.entities.arquivo.Arquivo;
 import br.edu.fatima.entities.repositories.arquivo.ReposArquivo;
 import br.edu.fatima.entities.repositories.usuario.ReposUsuario;
@@ -94,7 +100,35 @@ public class LoginController {
 			result.notFound();
 			return null;
 		}
-
 		return new ByteArrayDownload(perfil.getConteudo(), perfil.getContentType(), perfil.getNome());
+	}
+	
+	@Get
+	@Path("/qrcode/{id}")
+	public Download qrcode(Long id){
+		String  codigo = ""+id;
+		ByteArrayOutputStream out = QRCode.from(codigo).withCharset("UTF-8").to(ImageType.PNG).withSize(450, 450).stream();		
+		return new ByteArrayDownload(out.toByteArray(), "image/png", "qrcode");
+	}
+	
+	@Get
+	@Path(value={"/500/","/500"})
+	@Admin
+	public void error500() {
+		result.use(Results.http()).sendError(500, "Teste de pagina 500, esta e uma descrição da pagina.");
+	}
+	
+	@Get
+	@Path(value={"/404/","/404"})
+	@Admin
+	public void error404() {
+		result.use(Results.http()).sendError(404);
+	}
+	
+	@Get
+	@Path(value={"/401/","/401"})
+	@Admin
+	public void error401() {
+		result.use(Results.http()).sendError(401, "você não tem, permissão de acesso!");
 	}
 }

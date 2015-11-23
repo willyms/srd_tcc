@@ -180,58 +180,61 @@
 		            </div>
 		        </div>	
 		        <br />
-		        <div class="row agenda"> 
-					<div class="table-responsive"> 
-						<table class="table table-condensed table-bordered "> 
-							<thead> 
-								<tr> 
-									<th>Data</th> 
-									<th>Hora</th> 
-									<th class="text-center">Evento</th> 
-								</tr> 
-							</thead> 
-							<tbody> 
-							<!-- Single event in a single day --> 								
-								<c:if test="${not empty  historico}">
-									<c:forEach items="${historico}" var="h" begin="0" end="30"
-									step="1">									
-									<tr> 
-										<td class="agenda-date" class="active"
-											rowspan="${formatter.retornaQuantidadeFuncionario(h.dataentrada, pagina, id_funcionario)}"> 
-											<div class="dayofmonth">
-												<tt:localDate date="${h.dataentrada}" pattern="dd" />
-											</div> 
-											<div class="dayofweek">
-												<tt:localDate date="${h.dataentrada}" pattern="E" />
-											</div> 
-											<div class="shortdate text-muted">
-												<tt:localDate date="${h.dataentrada}" pattern="MMMMMMM" />, <tt:localDate
-													date="${h.dataentrada}" pattern="YYYY" />
-											</div> 
-										</td>
-									</tr>											
-										<c:forEach items="${historico2}" var="h2">
-											<c:if test="${h.dataentrada == h2.dataentrada}">
+		        <c:choose>
+		        	<c:when test="${not empty  historico}">
+		        		 <div class="row agenda"> 
+							<div class="table-responsive"> 
+								<table class="table table-condensed table-bordered "> 
+									<thead> 
+										<tr> 
+											<th>Data</th> 
+											<th>Hora</th> 
+											<th class="text-center">Evento</th> 
+										</tr> 
+									</thead> 
+									<tbody> 
+									<!-- Single event in a single day --> 
+											<c:forEach items="${historico}" var="h" begin="0" end="30"
+											step="1">									
 											<tr> 
-												<td class="agenda-time">${h2.horaentrada} - ${h2.horasaida} </td>  
-													<td class="agenda-events  ${h2.liberado ? '' :'danger'}"> 
-													<div class="agenda-event"> 
-														<fmt:message
-															key="src.mensagem.acesso.${h2.liberado ? 'liberado' : 'naoliberado'}">
-															<fmt:param value="${h2.funcionario.nome }" />
-															<fmt:param value="${h2.setor.nome}" />
-														</fmt:message>
-													</div>
-												</td>  
-											</tr>
-											</c:if>
-										</c:forEach>									 										 										
-									</c:forEach>
-								</c:if>
-							</tbody> 
-						</table> 
-					</div> 
-				</div> 
+												<td class="agenda-date" class="active"
+													rowspan="${formatter.retornaQuantidadeFuncionario(h.dataentrada, pagina, id_funcionario)}"> 
+													<div class="dayofmonth">
+														<tt:localDate date="${h.dataentrada}" pattern="dd" />
+													</div> 
+													<div class="dayofweek">
+														<tt:localDate date="${h.dataentrada}" pattern="E" />
+													</div> 
+													<div class="shortdate text-muted">
+														<tt:localDate date="${h.dataentrada}" pattern="MMMMMMM" />, <tt:localDate
+															date="${h.dataentrada}" pattern="YYYY" />
+													</div> 
+												</td>
+											</tr>											
+												<c:forEach items="${historico2}" var="h2">
+													<c:if test="${h.dataentrada == h2.dataentrada}">
+													<tr> 
+														<td class="agenda-time">${h2.horaentrada} - ${h2.horasaida} </td>  
+															<td class="agenda-events  ${h2.liberado ? '' :'danger'}"> 
+															<div class="agenda-event"> 
+																<fmt:message
+																	key="src.mensagem.acesso.${h2.liberado ? 'liberado' : 'naoliberado'}">
+																	<fmt:param value="${h2.funcionario.nome ne null ? h2.funcionario.nome : '<b>Tentativa invalido.' }" />
+																	<fmt:param value="${h2.setor.nome}" />
+																</fmt:message>
+															</div>
+														</td>  
+													</tr>
+													</c:if>
+												</c:forEach>									 										 										
+											</c:forEach>
+									</tbody> 
+								</table> 
+							</div> 
+						</div> 
+		        	</c:when>
+		       	<c:otherwise><h4 class="text-center lead"><strong><fmt:message key="srd.label.sem.resultado"/></strong></h4></c:otherwise>
+		        </c:choose>
 			</div>		
 	</jsp:body>
 </tt:template>

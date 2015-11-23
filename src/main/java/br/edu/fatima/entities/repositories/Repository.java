@@ -16,7 +16,7 @@ public abstract class Repository<T> {
 	@Inject
 	protected EntityManager em;
 
-	public void  novo(T entidade) {
+	public void novo(T entidade) {
 		em.persist(entidade);
 		em.flush();
 	}
@@ -37,11 +37,11 @@ public abstract class Repository<T> {
 	}
 
 	public T atualizar(T entidade) {
-		return em.merge(entidade);	
+		entidade = em.merge(entidade);
+		em.flush();
+		return entidade;
 	}
 
-	
-	
 	/**
 	 * @author Pedro Hos<br>
 	 *
@@ -62,7 +62,8 @@ public abstract class Repository<T> {
 			clazz = clazz.getSuperclass();
 		}
 
-		ParameterizedType tipoGenerico = (ParameterizedType) clazz.getGenericSuperclass();
+		ParameterizedType tipoGenerico = (ParameterizedType) clazz
+				.getGenericSuperclass();
 		return (Class<T>) tipoGenerico.getActualTypeArguments()[0];
 	}
 }

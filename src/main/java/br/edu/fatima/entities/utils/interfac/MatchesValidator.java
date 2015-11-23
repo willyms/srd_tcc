@@ -9,9 +9,7 @@ public class MatchesValidator implements ConstraintValidator<Matches, Object> {
 
 	private String[] fields;
 	private String[] verfyFields;
-	
-	
-	
+		
 	@Override
 	public void initialize(Matches constraintAnnotation) {
 		fields = constraintAnnotation.fields();
@@ -39,7 +37,7 @@ public class MatchesValidator implements ConstraintValidator<Matches, Object> {
             boolean tempMatches = (fieldObj != null) && fieldObj.equals(verifyFieldObj);
 
             if (!tempMatches) {
-                addConstraintViolation(context,"{validator.usuario.passverify}", verfyFields[i]);
+                addConstraintViolation(context,"re-enter password invalidates", verfyFields[i]);
             }
 
             matches = matches?tempMatches:matches;
@@ -47,6 +45,7 @@ public class MatchesValidator implements ConstraintValidator<Matches, Object> {
         return matches;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addConstraintViolation(ConstraintValidatorContext context,
 			String message, String field) {
 		

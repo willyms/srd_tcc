@@ -65,81 +65,75 @@
 		</ul>		
 	</jsp:attribute>
 	<jsp:body>
-			<c:if test="${not empty lista_usuario}">
-				   <div class="row">
-						<div class="col-md-offset-2 col-md-7 col-xs-12 col-sm-12">
-					            <form action="${linkTo[UsuarioController].filterLista}" method="post">
-					                <div class="input-group">
-					                    <!-- USE TWITTER TYPEAHEAD JSON WITH API TO SEARCH -->
-					                    <input class="form-control" id="system-search"
-														name="nome" value="${filter}" placeholder="Digiter o nome do usuario ..." required>
-					                    <span class="input-group-btn">
-					                   
-					                        <button type="submit" class="btn btn-default">
-															<i class="glyphicon glyphicon-search"></i> Buscar</button>
-					                     <c:if test="${empty filter }">	
-					                        <button type="reset" class="btn btn-warning">
-															<i class="glyphicon glyphicon-retweet"></i> Limpar
-											</button>
-										</c:if>
-										<c:if test="${not empty filter }">					
-											<a href="${linkTo[UsuarioController].lista(1, null)}" class="btn btn-primary">
-												<i class="glyphicon glyphicon-retweet"></i> Voltar
-											</a>
-										</c:if>
-					                    </span>
-					                </div>				                
-					            </form>
-			            </div>
-		       		 </div>						
+	   <div class="row">
+			<div class="col-md-offset-2 col-md-7 col-xs-12 col-sm-12">
+		            <form action="${linkTo[UsuarioController].filterLista}" method="post">
+		                <div class="input-group">
+		                    <!-- USE TWITTER TYPEAHEAD JSON WITH API TO SEARCH -->
+		                    <input class="form-control" id="system-search"
+											name="nome" value="${filter}" placeholder="Digiter o nome do usuario ..." required>
+		                    <span class="input-group-btn">
+		                   
+		                        <button type="submit" class="btn btn-default">
+												<i class="glyphicon glyphicon-search"></i> Buscar</button>
+		                     <c:if test="${empty filter }">	
+		                        <button type="reset" class="btn btn-warning">
+												<i class="glyphicon glyphicon-retweet"></i> Limpar
+								</button>
+							</c:if>
+							<c:if test="${not empty filter }">					
+								<a href="${linkTo[UsuarioController].lista(1, null)}" class="btn btn-primary">
+									<i class="glyphicon glyphicon-retweet"></i> Voltar
+								</a>
+							</c:if>
+		                    </span>
+		                </div>				                
+		            </form>
+            </div>
+       </div>						
 					<br />
-					<table class="table table-striped col-md-12 col-xs-10 col-sm-10">
-				    <thead>
-					    <tr>
-					    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">#</th>
-					    	<th>Nome</th>
-					    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Status</th>
-					    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Perfil</th>
-					    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Setor</th>  
-					    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Editar</th> 	
-					    </tr>
-				    </thead>				   
-				    <tbody>				     
-				      <c:forEach items="${lista_usuario}" var="u">
-				      		<tr>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.id }</td>
-				        		<td>${u.username }</td>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.ativo ? 'Ativo' : 'Desativo'}</td>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.perfil }</td>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.setor.nome }</td>
-				        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">
-					        		<p data-placement="top" data-toggle="tooltip" title="Edit">
-										<a href="${linkTo[UsuarioController].formedit(u.id)}" class="btn btn-primary btn-xs" data-title="Edit">
-												<span class="glyphicon glyphicon-pencil"></span>
-										</a>
-									</p>
-								</td>
-				    			<!-- <td class="col-sm-0 col-xs-0 col-md-1 text-center">
-					    			<p data-placement="top" data-toggle="tooltip" title="Delete">
-										<button class="btn btn-danger btn-xs" data-title="Delete"
-											data-toggle="modal" data-target="#delete">
-											<span class="glyphicon glyphicon-trash"></span>
-										</button>
-									</p>
-								</td> -->
-				      		</tr>
-				      </c:forEach>
-				    </tbody>
-				  </table>
-				 <ul id="pagination-demo" class="pagination"></ul>
-			</c:if>
-			<c:if test="${empty lista_usuario}">
-				<h2>Alerta !</h2>
-		  			<div class="well">
-						<h2>Lista em Vazia, cadastre no formulário de Usuário <a
-						href="${linkTo[UsuarioController].form}"><abbr>aqui</abbr> .</a>
-					</h2>
-					</div>
-			</c:if>
+					<c:choose>
+						<c:when test="${not empty lista_usuario}">							
+							<table class="table table-striped col-md-12 col-xs-10 col-sm-10">
+							    <thead>
+								    <tr>
+								    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">#</th>
+								    	<th>Nome</th>
+								    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Status</th>
+								    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Perfil</th>
+								    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Setor</th>  
+								    	<th class="col-sm-0 col-xs-0 col-md-1 text-center">Editar</th> 	
+								    </tr>
+							    </thead>				   
+							    <tbody>				     
+							      <c:forEach items="${lista_usuario}" var="u" varStatus="index">
+							      		<tr>
+							        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${index.count}</td>
+							        		<td>${u.username }</td>
+							        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.ativo ? 'Ativo' : 'Desativo'}</td>
+							        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${u.perfil }</td>
+							        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">${not empty u.setor.nome ?  u.setor.nome : 'Não a Vínculo' }</td>
+							        		<td class="col-sm-0 col-xs-0 col-md-1 text-center">
+								        		<p data-placement="top" data-toggle="tooltip" title="Edit">
+													<a href="${linkTo[UsuarioController].formedit(u.id)}" class="btn btn-primary btn-xs" data-title="Edit">
+															<span class="glyphicon glyphicon-pencil"></span>
+													</a>
+												</p>
+											</td>				    			
+							      		</tr>
+							      </c:forEach>
+							    </tbody>
+							  </table>
+							 <ul id="pagination-demo" class="pagination"></ul>
+						</c:when>
+						<c:otherwise>
+							<h2>Alerta !</h2>
+				  			<div class="well">
+								<h2>Lista em Vazia, cadastre no formulário de Usuário <a
+								href="${linkTo[UsuarioController].form}"><abbr>aqui</abbr> .</a>
+							</h2>
+							</div>
+						</c:otherwise>
+					</c:choose>
 	</jsp:body>	
 </tt:template>

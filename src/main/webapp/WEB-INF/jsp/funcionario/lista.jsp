@@ -45,10 +45,12 @@
 		 </div>
 		<div class="row">
 			  <section id="pinBoot">
-				<c:forEach items="${lista_funcionario}" var="f" varStatus="var">			
+			  <c:choose>
+			  	<c:when test="${not empty lista_funcionario}">
+			  				<c:forEach items="${lista_funcionario}" var="f" varStatus="var">			
 					<article class="white-panel">
 						<img src="${linkTo[FuncionarioController].image(f.arquivo.id)}" alt="">
-				        <h5><a href="#">${fn:toUpperCase(f.nome)}</a></h5>
+				        <h4>${fn:toUpperCase(f.nome)}</h4>
 				        <div class="profile-usermenu">
 							<ul class="nav">
 								<li id="item_${var.count}_1">
@@ -108,6 +110,9 @@
 						</div>		
 				        </article>
 				</c:forEach>
+			  	</c:when>
+			  	<c:otherwise><h4 class="text-center lead"><strong><fmt:message key="srd.label.sem.resultado"/></strong></h4></c:otherwise>
+			  </c:choose>
 			  </section>
 			  <script type="text/javascript">
 				function ativa_mouse(id) {					

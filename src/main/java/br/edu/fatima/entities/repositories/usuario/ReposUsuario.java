@@ -8,6 +8,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -174,5 +175,22 @@ public class ReposUsuario extends Repository<Usuario> implements
 	public boolean isValid(Usuario usuario, ConstraintValidatorContext context) {
 		return comLoginESenha(usuario.getUsername(),
 				CriptografiaUtil.criptografarString(usuario.getPassword())) != null;
+	}
+
+	public void desativarComId(Long id) {
+		desativarOuAtivar(id, false);
+	}
+
+	public void ativarComId(Long id) {
+		desativarOuAtivar(id, true);
+	}
+
+	protected void desativarOuAtivar(Long id, boolean ativar) {
+		CriteriaBuilder criteriaBuilder = this.em.getCriteriaBuilder();		
+		CriteriaUpdate<Usuario> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Usuario.class);		
+		Root<Usuario> update = criteriaUpdate.from(Usuario.class);		
+		criteriaUpdate.set(Usuario_.ativo, ativar);		
+		criteriaUpdate.where(criteriaBuilder.equal(update.get(Usuario_.id), id));		
+		this.em.createQuery(criteriaUpdate).executeUpdate();
 	}
 }

@@ -16,6 +16,9 @@ import lombok.Setter;
 @MappedSuperclass
 public class DefaultEntity implements Serializable {
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,17 +26,17 @@ public class DefaultEntity implements Serializable {
 	@SequenceGenerator(name="my_seq_gen", sequenceName="ENTITY_SEQ")
 	@Getter
 	@Setter
-	@Column(name = "id", nullable = false, updatable = false)
+	@Column(name = "id")
 	private Long id;
 
 	@Getter
 	@Setter
-	@Column(name = "cl_status", nullable = false)
+	@Column(name = "cl_status")
 	private boolean ativo = true;
 
 	@Getter
 	@Setter
-	@Column(name = "data_criacao", nullable = false)
+	@Column(name = "data_criacao")
 	private LocalDateTime dataCriacao = LocalDateTime.now();
 
 }

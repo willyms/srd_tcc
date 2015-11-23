@@ -12,6 +12,7 @@ import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.interceptor.IncludeParameters;
 import br.com.caelum.vraptor.validator.SimpleMessage;
@@ -103,16 +104,54 @@ public class UsuarioController extends CategoriaMessage {
 	public void formedit(Long id){
 		if(id == null) result.notFound();
 		if(usuarioNoBanco.comId(id) == null) result.notFound();
-		result.redirectTo(this).form(usuarioNoBanco.comId(id), new Funcionario());
+		result.redirectTo(this).form(usuarioNoBanco.comId(id), null);
+	}
+	
+	@Put
+	@Path(value = {"/update/"})
+	public void editar(@Valid Usuario usuario){
+		logger.debug("alteraçao o usuario no banco de dados ....");	
+		validator.onErrorForwardTo(this).form(usuario, null);
+		Optional<Funcionario> funcOptional = Optional.ofNullable(usuario.getFuncionario());
+		Optional<Setor> setorOptional = Optional.ofNullable(usuario.getSetor());
+		
+				
+		if(setorOptional.isPresent())
+		{
+			logger.info("E um setor ...");
+			Boolean status = setorNoBanco.comId(setorOptional.get().getId()).isAtivo();
+			if(!status){ 
+				validator.add(
+						new SimpleMessage("setor.nome", "{validator.usuario.setor.desativo}", "setor.nome"))
+						.onErrorRedirectTo(this)
+						.form(usuario, null);}
+			usuario.setPerfil(Perfil.USER);
+		}
+		
+		if(funcOptional.isPresent())
+		{
+			logger.info("E um funcionario ...");
+			Boolean status = funcNabanco.comId(funcOptional.get().getId()).isAtivo();
+			if(!status){ validator.add(new SimpleMessage("funcionario.ativo", "{validator.usuario.funcionario.desativo}", "funcionario.ativo")).onErrorRedirectTo(this).form(usuario, usuario.getFuncionario());}	
+			usuario.setPerfil(Perfil.ADMIN);
+		}
+		
+		String p1 = CriptografiaUtil.criptografarString(usuario.getPassword());
+		String p2 = CriptografiaUtil.criptografarString(usuario.getPassVerify());
+		
+	    usuario.setPassword(p1);
+		usuario.setPassVerify(p2);
+		
+		validator.validate(usuario).onErrorForwardTo(this).form(usuario, usuario.getFuncionario());
+		usuarioNoBanco.atualizar(usuario);
+		result.include(INFOR, "Usuário alterando com sucesso !");		
+		result.redirectTo(this).lista(1, null);
+		
 	}
 	
 	@Post
-	@Path(value = {"/alterar", "/alterar/"})
-	public void editar(Usuario usuario){}
-	
-	@Post
 	@Path(value = {"/"})
-	public void gravar(@Valid Usuario usuario, Long id){
+	public void gravar(@Valid Usuario usuario){
 		logger.debug("gravando o usuario no banco de dados ....");	
 		validator.onErrorForwardTo(this).form(usuario, new Funcionario());
 		Optional<Funcionario> funcOptional = Optional.ofNullable(usuario.getFuncionario());
@@ -124,7 +163,7 @@ public class UsuarioController extends CategoriaMessage {
 			Boolean status = setorNoBanco.comId(setorOptional.get().getId()).isAtivo();
 			if(!status){ 
 				validator.add(
-						new SimpleMessage("setor.nome", "Setor desativado, selecione outro.", "setor.nome"))
+						new SimpleMessage("setor.nome", "{validator.usuario.setor.desativo}", "setor.nome"))
 						.onErrorRedirectTo(this)
 						.form(usuario, null);}
 			usuario.setPerfil(Perfil.USER);
@@ -133,20 +172,48 @@ public class UsuarioController extends CategoriaMessage {
 		if(funcOptional.isPresent())
 		{
 			Boolean status = funcNabanco.comId(funcOptional.get().getId()).isAtivo();
-			if(!status){ validator.add(new SimpleMessage("funcionario.ativo", "Funcionario desativado, nao poder ser administrator.", "funcionario.ativo")).onErrorRedirectTo(this).form(usuario, usuario.getFuncionario());}	
+			if(!status){ validator.add(new SimpleMessage("funcionario.ativo", "{validator.usuario.funcionario.desativo}", "funcionario.ativo")).onErrorRedirectTo(this).form(usuario, usuario.getFuncionario());}	
 			usuario.setPerfil(Perfil.ADMIN);
-		}
-		
-		if(id == null){
-		    usuario.setPassword(CriptografiaUtil.criptografarString(usuario.getPassword()));
-			usuario.setPassVerify(CriptografiaUtil.criptografarString(usuario.getPassVerify()));
-			usuarioNoBanco.novo(usuario);
-			result.include(SUCESSO, "Usuario cadastro com sucesso !");
-		}else{
-			usuario.setId(id);
-			//usuarioNoBanco.atualizar(usuario);
 		}		
+		
+	    usuario.setPassword(CriptografiaUtil.criptografarString(usuario.getPassword()));
+		usuario.setPassVerify(CriptografiaUtil.criptografarString(usuario.getPassVerify()));
+		usuarioNoBanco.novo(usuario);
+		result.include(SUCESSO, "Usuario cadastro com sucesso !");
+		
 		result.redirectTo(this).lista(1, null);
 	}
 	
+	@Get
+	@Path(value = "/ativar/{id}")
+	public void ativar(Long id){
+		if(usuarioNoBanco.comId(id) == null){
+			result.notFound();
+		}
+		Optional<Setor> setorOptional = Optional.ofNullable(usuarioNoBanco.comId(id).getSetor());
+		if(setorOptional.isPresent())
+		{
+			setorNoBanco.ativarComId(setorOptional.get().getId());
+		}
+		usuarioNoBanco.ativarComId(id);		
+		result.include(WARNING, "Usuario ativo com sucesso");
+		result.redirectTo(this).lista(1, null);
+	}
+	
+	@Get
+	@Path(value = "/desativar/{id}")
+	public void desativar(Long id){
+		if(usuarioNoBanco.comId(id) == null){
+			result.notFound();
+		}
+		
+		Optional<Setor> setorOptional = Optional.ofNullable(usuarioNoBanco.comId(id).getSetor());
+		if(setorOptional.isPresent())
+		{
+			setorNoBanco.desativarComId(setorOptional.get().getId());
+		}
+		usuarioNoBanco.desativarComId(id);			
+		result.include(WARNING, "Usuário desativado com sucesso");
+		result.redirectTo(this).lista(1, null);
+	}
 }

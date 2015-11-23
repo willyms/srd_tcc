@@ -132,6 +132,16 @@
 		</script>
 	</jsp:attribute>
 	<jsp:body>
+		  <div class="row">
+			<c:if test="${not empty errors}">
+  				   <div class="alert alert-warning">
+  				   	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+     			   <c:forEach var="error" items="${errors}">
+  						<strong>Aviso :</strong>  ${error.message} <br />.
+     			   </c:forEach>
+   				 </div>
+			</c:if>
+	  </div> 	
 		<form action="${linkTo[SetorController].alterar }" method="post">
 			<input type="hidden" name="setor.id" value="${setor.id}" />
 			<fieldset class="form-group">

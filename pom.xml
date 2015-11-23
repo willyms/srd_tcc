@@ -12,7 +12,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<weld.version>2.1.2.Final</weld.version>
 		<hibernate.version>5.0.0.Final</hibernate.version>
-		<project.basedir>C:\Users\William\git\Tcc</project.basedir>
+
+		<!-- <project.basedir>C:\Users\William\git\srd_tcc</project.basedir> -->
+		<project.basedir>C:\Users\TI-FM\git\srd_tcc</project.basedir>
 	</properties>
 
 	<dependencies>
@@ -21,7 +23,6 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -64,6 +65,12 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
+			<version>4.3.6.Final</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
 			<version>4.3.6.Final</version>
 		</dependency>
 
@@ -140,12 +147,6 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-
-		<!-- <dependency> <groupId>javax.servlet</groupId> <artifactId>javax.servlet-api</artifactId> 
-			<version>3.1.0</version> </dependency> <dependency> <groupId>javax.servlet</groupId> 
-			<artifactId>jsp-api</artifactId> <version>2.0</version> </dependency> <dependency> 
-			<groupId>javax.el</groupId> <artifactId>el-api</artifactId> <version>2.2</version> 
-			</dependency> -->
 
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -296,6 +297,13 @@
 			<artifactId>jasperreports-fonts</artifactId>
 			<version>6.0.0</version>
 		</dependency>
+
+		<!-- Gerar Qr-Code -->
+		<dependency>
+			<groupId>net.glxn</groupId>
+			<artifactId>qrgen</artifactId>
+			<version>1.4</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
@@ -340,17 +348,32 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+
+
 			<!-- configuracao deploy maven com tomcat 7 ou 8 -->
+			<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat7-maven-plugin</artifactId> 
+				<configuration> <path>/${project.build.finalName}</path> <update>true</update> 
+				<url>http://localhost:8080/manager/text</url> <username></username> <password></password> 
+				</configuration> </plugin> -->
+
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<configuration>
-					<path>/${project.build.finalName}</path>
-					<update>true</update>
-					<url>http://164.41.150.174:8080/manager/text</url>
-					<username>admin</username>
-					<password>0mn1tr1x</password>
-				</configuration>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy_package</id>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<copy file="target/srd.war"
+									todir="C:\Program Files\Apache Software Foundation\Tomcat 8.0\webapps" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

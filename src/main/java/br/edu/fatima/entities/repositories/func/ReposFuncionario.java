@@ -1,6 +1,7 @@
 package br.edu.fatima.entities.repositories.func;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -10,6 +11,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
@@ -88,16 +90,26 @@ public class ReposFuncionario extends Repository<Funcionario> {
 	}
 	
 	public List<Funcionario> buscaPorNome(String nome){
-		List<Funcionario> lista = new ArrayList<Funcionario>();
+		List<Funcionario> lista = Collections.emptyList();		
 		try {
-			
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Funcionario> cq = cb.createQuery(Funcionario.class);
 			Root<Funcionario> form = cq.from(Funcionario.class);
-			String p = "%"+nome.toUpperCase()+"%";
-			cq.select(form).where(cb.like(cb.upper(form.get(Funcionario_.nome)), p));
+			String novo_nome = "%"+nome.toUpperCase()+"%";
+			Predicate paramentro = cb.like(cb.upper(form.get(Funcionario_.nome)), novo_nome);
+			cq.select(form).where(paramentro);
+			
+			//ParameterExpression<String> param = cb.parameter(String.class, novo_nome);
+			//criteria.add(cb.like(cb.upper(form.get(Funcionario_.nome)), param));
 						
-			return em.createQuery(cq).getResultList();
+			//where(cb.like(cb.upper(form.get(Funcionario_.nome)), p));
+			
+			lista = em.createQuery(cq).getResultList();
+			
+			if(lista.isEmpty())
+				logger.warn("em banco -> "+lista.size());
+			
+			return lista;
 		} catch (NoResultException e) {
 			return lista;
 		}

@@ -1,10 +1,9 @@
 angular.module('mySRD').controller('qrCrtl',
-		[ '$scope', '$http', 'qrcodeService', '$timeout', '$interval', function($scope, $http, qrcodeService, $timeout, $interval) {
+		[ '$scope', '$http', 'qrcodeService', '$timeout', '$interval', '$cacheFactory', 
+		  function($scope, $http, qrcodeService, $timeout, $interval, $cacheFactory ) {
 			$scope.acessoLiberado = false;
 			$scope.acessonaoLiberado=false;
-			
-	
-		console.log("inicializando ...........")
+			$scope.lerCodigo=true;
 			
 		$scope.onSuccess = function(data) {
 			//console.log("Sucesso" + data);
@@ -18,23 +17,24 @@ angular.module('mySRD').controller('qrCrtl',
 		};
 	
 		function verificarServlet(valores) {
-			$http.get('/srd/acesso/verificarqrcode/'+valores, {cache: true})
-	        .then(function(res){
-	            console.log(res.data.boolean);
-	            
-	            if(res.data.boolean){
-	            	$scope.acessoLiberado = res.data.boolean;
+			if($scope.lerCodigo){
+			var url = "/srd/acesso/verificarqrcode/"+valores;
+			$http.get(url, {cache: false})
+			.success(function(result){		
+	            if(result.boolean){
+	            	$scope.acessoLiberado = result.boolean;
 	            }else{
-	            	$scope.acessonaoLiberado = !res.data.boolean;
+	            	$scope.acessonaoLiberado = !result.boolean;
 	            }
-	        })
+	            $scope.lerCodigo=false;
+	        });
+			}
 		}
-		
 			    
 	    $scope.callAtInterval = function() {
 	    	$scope.acessoLiberado = false;
 			$scope.acessonaoLiberado=false;
-	        console.log("$scope.callAtInterval - Interval occurred");
+			$scope.lerCodigo=true;
 	    }
 
 	    $interval( function(){ $scope.callAtInterval(); }, 10000, false);

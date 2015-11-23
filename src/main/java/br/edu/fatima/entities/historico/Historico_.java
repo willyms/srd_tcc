@@ -9,7 +9,7 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="Dali", date="2015-11-21T09:53:11.859-0200")
+@Generated(value="Dali", date="2015-11-26T16:18:03.007-0200")
 @StaticMetamodel(Historico.class)
 public class Historico_ extends DefaultEntity_ {
 	public static volatile SingularAttribute<Historico, LocalDate> dataentrada;

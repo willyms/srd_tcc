@@ -20,7 +20,7 @@ import javax.validation.Payload;
 @Documented
 public @interface Matches {
 	
-	 String message() default "{validator.usuario.passverify}";
+	 String message() default "re-enter password invalidates";
 
 	  Class<?>[] groups() default {};
 

@@ -2,7 +2,9 @@ package br.edu.fatima.tads.controllers.acesso;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -28,8 +30,10 @@ import br.edu.fatima.tads.controllers.usuario.auth.UsuarioLogado;
 @Path(value = { "/acesso" })
 public class AcessoController {
 
-	Logger logger = LoggerFactory.getLogger(AcessoController.class);
-	
+	Logger logger = LoggerFactory.getLogger(AcessoController.class);	
+	private static LocalTime horario_de_agora = LocalTime.now();
+	@SessionScoped
+	private static LocalTime horario_do_registro;	
 	private static final Boolean B_ACESSO_AUTORIZADO = true;
 	private static final Boolean B_ACESSO_NAO_AUTORIZADO = false;
 	
@@ -64,29 +68,72 @@ public class AcessoController {
 	@Path("/verificarqrcode/{params}")
 	@Consumes(value = "application/json")
 	@IncludeParameters
-	public void verificarAcesso(Long params) {		
+	public void verificarAcesso(Long params) {	
+		horario_de_agora = LocalTime.now();
+		
+		Optional<LocalTime> OptionalTime = Optional.ofNullable(horario_do_registro);
 		Boolean acesso = historicoNobanco.verificaqrcode(params, logado.getUsuario().getSetor().getId());
-		if(acesso){	
-			result.use(Results.json()).from(B_ACESSO_AUTORIZADO).serialize();
-			verificaEntrada(params, logado.retornaSetor());			
-		}else
-			result.use(Results.json()).from(B_ACESSO_NAO_AUTORIZADO).serialize();	
+		
+		if(OptionalTime.isPresent()){
+			logger.info("Horario de agora : "+horario_de_agora.toString()+" horario de registro : "+OptionalTime.get().toString());
+			if(horario_de_agora.isAfter(OptionalTime.get())){
+				logger.info("---> "+horario_de_agora.isAfter(OptionalTime.get()));
+				if(acesso){	
+					horario_do_registro = horario_de_agora.plusMinutes(1);
+					result.use(Results.json()).from(B_ACESSO_AUTORIZADO).serialize();
+					verificaEntrada(params, logado.retornaSetor());			
+				}else{
+					horario_do_registro = horario_de_agora.plusMinutes(1);
+					registraTentativa(params, logado.getUsuario().getSetor().getId());
+					result.use(Results.json()).from(B_ACESSO_NAO_AUTORIZADO).serialize();	
+				}
+			}else{
+				result.use(Results.json()).from(B_ACESSO_NAO_AUTORIZADO).serialize();	
+			}
+		}
+		
+		
+		if(!OptionalTime.isPresent()){
+			if(acesso){	
+				horario_do_registro = horario_de_agora.plusMinutes(1);
+				result.use(Results.json()).from(B_ACESSO_AUTORIZADO).serialize();
+				verificaEntrada(params, logado.retornaSetor());			
+			}else{
+				horario_do_registro = horario_de_agora.plusMinutes(1);
+				registraTentativa(params, logado.getUsuario().getSetor().getId());
+				result.use(Results.json()).from(B_ACESSO_NAO_AUTORIZADO).serialize();	
+			}
+		}
 	}
 	
 	protected void  verificaEntrada(Long funcionario, Long setor) {
 		logger.debug("inicianado method verificaentrada ...");
-		 Historico historico = historicoNobanco.funcioarioEntrou(funcionario, setor);
-		 Funcionario f = funcNoBanco.comId(funcionario);
-		 Setor s = setorNobanco.comId(setor);
-		 if(historico == null){
-			 logger.debug("registrando acesso entrada ....");
-			 historicoNobanco.novo(new Historico().registaEntrada(f, s));
+		Funcionario f = funcNoBanco.comId(funcionario);
+		Setor s = setorNobanco.comId(setor);
+		
+		 Optional<Historico> histOptional = Optional.ofNullable(historicoNobanco.funcioarioEntrou(f, s));
+		 		 
+		 if(histOptional.isPresent()){
+			 logger.info("registrando saida do setor");
+			 Historico h = histOptional.get();
+			 h.setDatasaida(LocalDate.now());
+		 	 h.setHorasaida(LocalTime.now());
+			 historicoNobanco.atualizar(h); 
 		 }else{
-			 logger.debug("registrando acesso saida");
-			 historico.setDatasaida(LocalDate.now());
-		 	 historico.setHorasaida(LocalTime.now());
-			 historicoNobanco.atualizar(historico); 
-		 }
+			 logger.info("registrando acesso entrada ....");
+			 historicoNobanco.novo(new Historico().registaEntrada(f, s));
+		 }		 
+	}
+	
+	protected void registraTentativa(Long funcionario, Long setor) {
+		logger.debug("registrando tentativa de acesso");
+		Funcionario f = funcNoBanco.comId(funcionario);
+		Setor s = setorNobanco.comId(setor);
+		Historico h = new Historico();
+		h.setLiberado(false);
+		h.setFuncionario(f);
+		h.setSetor(s);
+		historicoNobanco.atualizar(h); 
 	}
 
 }

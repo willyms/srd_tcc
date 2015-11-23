@@ -50,7 +50,7 @@ public class FuncionarioController extends CategoriaMessage{
 	private Result result;
 	private java.util.regex.Pattern pattern;
 	private java.util.regex.Matcher matcher;
-	private static final String IMAGE_PATTERN =  "([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)";
+	private static final String IMAGE_PATTERN =  "([^\\s]+(\\.(?i)(jpg|png))$)";
 	 
 		
 	@Inject
@@ -116,14 +116,23 @@ public class FuncionarioController extends CategoriaMessage{
 			@NotNull(message="selecione uma imagem")  UploadedFile Filedata) {
 		logger.debug("funcionario controller novo");
 		
+
+		if(funcionario.getDataentrada() != null && funcionario.getDatasaida() != null){
+			if(funcionario.getDataentrada().isAfter(funcionario.getDatasaida())){
+				validator.add(new SimpleMessage("funcionario.dataentrada", "Data Termino e menor, que a data entrada.", "funcionario.dataentrada")).onErrorRedirectTo(this).form(funcionario);	
+			}			
+		}
+		
 		validator.onErrorForwardTo(this).form(funcionario);
 				
 		Arquivo arquivo = upload(Filedata);		
 		
+		
 		if(validateFormator(arquivo.getContentType())){
 			validator.add(new SimpleMessage("funcionario.acesso.setor.nome", "{validator.arquivo.formator}", "funcionario.arquivo.contentType")).onErrorRedirectTo(this).form(funcionario);	
-		}
+		}		
 		
+		validator.validate(arquivo).onErrorRedirectTo(this).form(funcionario);	
 		/*validator.validate(arquivo).add(new SimpleMessage("arquivo.contentType", "O Formator da imagem, é diferente de JPG,JPEG e PNG.", "funcionario.arquivo.contentType"))
 			     .onErrorRedirectTo(this).form(funcionario);*/
 		
@@ -171,7 +180,19 @@ public class FuncionarioController extends CategoriaMessage{
 	public void editar(@Valid Funcionario funcionario, UploadedFile Filedata) {
 		logger.debug("funcionario controller editar");
 		Arquivo arquivo = null;
-
+		
+		if(funcionario.getDataentrada() != null && funcionario.getDatasaida() != null){
+			if(funcionario.getDataentrada().isAfter(funcionario.getDatasaida())){
+				validator.add(new SimpleMessage("funcionario.datasaida", "Data Termino e menor, que a data entrada.", "funcionario.datasaida")).onErrorRedirectTo(this).form(funcionario);	
+			}			
+		}
+		
+		if(funcionario.getHoraentrada() != null && funcionario.getHorasaida() != null){
+			if(funcionario.getHoraentrada().isAfter(funcionario.getHorasaida())){
+				validator.add(new SimpleMessage("funcionario.horasaida", "Hora de Saida e menor, que a Hora de Inicio.", "funcionario.horasaida")).onErrorRedirectTo(this).form(funcionario);	
+			}			
+		}
+		
 		if (Filedata != null) {
 			logger.debug("pegando URI (key da foto) e armazenando no funcionario ... ");
 			arquivo = upload(Filedata);

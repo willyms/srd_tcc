@@ -26,6 +26,7 @@ import br.edu.fatima.entities.DefaultEntity;
 import br.edu.fatima.entities.acesso.Acesso;
 import br.edu.fatima.entities.arquivo.Arquivo;
 import br.edu.fatima.entities.historico.Historico;
+import br.edu.fatima.entities.utils.SRDFuture;
 import br.edu.fatima.entities.utils.interfac.UniqueKey;
 
 @Entity
@@ -43,21 +44,21 @@ public class Funcionario extends DefaultEntity {
 
 	@Getter
 	@Setter
-	@Column(name = "cl_cpf", unique=true, updatable=false)
+	@Column(name = "cl_cpf", unique=true, updatable=true)
 	@Size(min=11, max=14, message="{validator.funcionario.cpf.tamanho}")
 	private String cpf;
 
 	@Getter
 	@Setter	
-	@Column(name = "cl_name", unique=true, updatable=false)
+	@Column(name = "cl_name", unique=true, updatable=true)
 	@NotNull(message ="{validator.funcionario.nome.vazio}")
 	@Size(min=10, message="{validator.funcionario.nome.tamanho}")
 	private String nome;
 
-
 	@Getter
 	@Setter
-	@Column(name = "cl_date_entry")	   
+	@SRDFuture
+	@Column(name = "cl_date_entry")	 
 	private LocalDate dataentrada;
 	
 	@Getter
@@ -67,10 +68,10 @@ public class Funcionario extends DefaultEntity {
 
 	@Getter
 	@Setter
+	@SRDFuture
 	@Column(name = "cl_date_exit")
 	private LocalDate datasaida;
-	
-	
+		
 	@Getter
 	@Setter
 	@Column(name = "cl_time_exit")	   
@@ -99,5 +100,5 @@ public class Funcionario extends DefaultEntity {
 	@Setter
 	@Getter
 	private String foto;
-
+		
 }

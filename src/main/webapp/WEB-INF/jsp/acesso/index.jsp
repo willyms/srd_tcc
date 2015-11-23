@@ -26,17 +26,16 @@
 	</jsp:attribute>
 	<jsp:body>	
 		<div class="row">			
-			<div ng-controller="qrCrtl">
-			
+			<div ng-controller="qrCrtl">		
 				
 				<div ng-if="acessoLiberado" class="alert alert-success" id="success-alert">
 					    <button type="button" class="close" data-dismiss="alert">x</button>
-					    <strong>Success! </strong> Acesso permitido!
+					    <strong>Sucesso :</strong> Acesso permitido!
 				</div>	
 				
 				<div ng-if="acessonaoLiberado" class="alert alert-danger" id="success-alert">
 					    <button type="button" class="close" data-dismiss="alert">x</button>
-					    <strong>Success! </strong> Não Acesso permitido!
+					    <strong>Atenção : </strong> Acesso não permitido.Favor procurar a recepção!
 				</div>				
 				
 				<div align="center" class="embed-responsive embed-responsive-16by9">

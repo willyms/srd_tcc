@@ -32,7 +32,7 @@
 				      			 <div class="list-group-item">
 		                              <h4 class="list-group-item-heading">
 		                                 ${s.nome}
-		                                  <a href="#"  data-toggle="tooltip" data-placement="right" title="<fmt:message key="src.label.detalher" ><fmt:param value="${s.ativo ? 'ativo':'desativo'}" /><fmt:param value="${formatter.localDateTime(s.dataCriacao)}" /></fmt:message>">
+		                                  <a href="#"  data-toggle="tooltip" data-placement="right" title="<fmt:message key="src.label.detalher" ><fmt:param value="${s.ativo ? 'Ativado' : 'Desativado'}" /><fmt:param value="${formatter.localDateTime(s.dataCriacao)}" /></fmt:message>">
 		                                    <small><i class="glyphicon glyphicon-${s.ativo ? 'ok' : 'remove' }"></i></small>
 		                                  </a>
 		                              </h4>

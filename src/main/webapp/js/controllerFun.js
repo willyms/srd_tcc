@@ -60,7 +60,7 @@ angular.module('mySRD').directive('file', function() {
 
 angular.module('mySRD').controller(
 		'ctrSetor',
-		function($scope, setorService) {
+		function($scope, setorService, $http) {
 
 			$scope.formSetor = false;
 			$scope.lista_setores = [];
@@ -97,9 +97,10 @@ angular.module('mySRD').controller(
 				}
 				return true;
 			}
-///Listar todos do banco de dados
+			
+            ///Listar todos do banco de dados
 			function buscarTodos() {
-				setorService.query(function(lista_setores) {
+				/*setorService.query(function(lista_setores) {
 					for (var i = 0; i < lista_setores.length; i++) {
 						$scope.lista_setores.push({
 							nome : lista_setores[i].nome,
@@ -109,11 +110,39 @@ angular.module('mySRD').controller(
 					}
 				}), function(erro) {
 					console.log(erro);
-				}
+				}*/
+				var url = "/srd/setor/";
+				$http.get(url, {cache: false})				
+				.success(function(result){		
+					for (var i = 0; i < result.length; i++) {
+						$scope.lista_setores.push({
+							nome : result[i].nome,
+							ativo : result[i].ativo,
+							check : false
+						});
+					}
+		        })
+		        .error(function(error){
+		        	console.log(error);
+		        });
 			}
 			/// listar por id do funcionario 
 			if ($scope.funcionarioId != null) {
-				setorService.query({
+				var url = "/srd/setor/";
+				$http.get(url, {cache: false})				
+				.success(function(result){		
+					for (var i = 0; i < result.length; i++) {
+						$scope.lista_setores.push({
+							nome : result[i].nome,
+							ativo : result[i].ativo,
+							check : false
+						});
+					}
+		        })
+		        .error(function(error){
+		        	console.log(error);
+		        });
+				/*setorService.query({
 					params : $scope.funcionarioId
 				}, function(setores) {
 					for (var i = 0; i < $scope.lista_setores.length; i++) {		
@@ -128,7 +157,24 @@ angular.module('mySRD').controller(
 					$scope.lista_setores = $scope.listaTmp;
 				}, function(erro) {
 					console.log("erro" + erro);
-				})
+				})*/
+				var urlid = "/srd/setor/"+$scope.funcionarioId;
+				$http.get(urlid, {cache: false})				
+				.success(function(result){		
+					console.log("validando dados....");
+					for (var i = 0; i < result.length; i++) {	
+						console.log(result[i].nome +"->"+ VerficicarSeSetorEstaVinculoComFuncionario(result[i].nome, $scope.lista_setores));
+						$scope.listaTmp.push({
+							nome : result[i].nome,
+							ativo :result[i].ativo,
+							check :  VerficicarSeSetorEstaVinculoComFuncionario(result[i].nome, result)
+						});
+					}
+					$scope.lista_setores = $scope.listaTmp;
+		        })
+		        .error(function(error){
+		        	console.log(error);
+		        });				
 			}
 			
 			function VerficicarSeSetorEstaVinculoComFuncionario(param, setorDofuncionario){

@@ -26,7 +26,7 @@ public class Setor extends DefaultEntity {
 	@Getter
 	@Setter
 	@Column(name = "cl_name", length = 50)	
-	@Size(max=50, min=3, message="{validator.setor.nome.tamanho}")
+	@Size(max=50, min=1, message="{validator.setor.nome.tamanho}")
 	private String nome;
 
 
